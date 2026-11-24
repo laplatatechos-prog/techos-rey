@@ -138,6 +138,8 @@ input:focus-visible,textarea:focus-visible{outline:3px solid var(--oro);outline-
 #aviso{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--fg);color:#fff;padding:10px 18px;border-radius:22px;font-size:15px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:20;max-width:86%;text-align:center}
 #aviso.ver{opacity:1}
 #callar{position:fixed;z-index:13;right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(84px + env(safe-area-inset-bottom,0px));box-shadow:0 3px 10px rgba(10,15,35,.2)}
+#btnCambio{position:fixed;z-index:7;right:calc(12px + env(safe-area-inset-right,0px));bottom:calc(78px + env(safe-area-inset-bottom,0px));font:600 13.5px var(--texto);padding:8px 12px;border-radius:20px;border:1px solid var(--linea);background:var(--sup);color:var(--suave);box-shadow:0 3px 10px rgba(10,15,35,.15);cursor:pointer}
+#btnCambio:focus-visible{outline:3px solid var(--oro);outline-offset:2px}
 #quienEntra{position:fixed;inset:0;z-index:50;background:var(--bg);display:grid;place-items:center;padding:20px}
 .qe-caja{background:var(--sup);border:1px solid var(--linea);border-radius:20px;padding:28px 24px;display:flex;flex-direction:column;gap:12px;align-items:center;width:100%;max-width:340px;box-shadow:var(--sombra)}
 .qe-caja h2{font:800 24px var(--display);color:var(--fg);text-transform:none;letter-spacing:0;margin:4px 0 6px}
@@ -159,6 +161,7 @@ input:focus-visible,textarea:focus-visible{outline:3px solid var(--oro);outline-
 <div id="velo" hidden></div>
 <div id="hoja" hidden role="dialog" aria-modal="true"></div>
 <div id="aviso" role="status"></div>
+<button id="btnCambio" aria-label="Pedir un cambio en la app">✏️ Pedir un cambio</button>
 <button id="callar" class="b p" hidden>■ Callar</button>
 
 <script src="puente.js"></script>
@@ -213,7 +216,7 @@ async function iniciar(){pintar();
   db=await claude.use("db");
   if(!db){$("sub").textContent="Sin conexión";$("app").innerHTML='<div class="card vacio">No hay conexión con la base. Revisá internet y volvé a abrir.</div>';return}
   var timer=setTimeout(function(){$("sub").textContent="La base tarda en responder…"},10000);
-  ["clientes","trabajos","historia","avisos","mensajes","chats","agenda"].forEach(function(col){
+  ["clientes","trabajos","historia","avisos","mensajes","chats","agenda","pedidos"].forEach(function(col){
     db.collection(col).onSnapshot(function(snap){clearTimeout(timer);var o={};snap.docs.forEach(function(d){o[d.id]=d.data()});S[col]=o;sub();if(!$("hoja").hidden&&S._hojaViva)S._hojaViva();else pintar()},
       function(e){clearTimeout(timer);$("sub").textContent="No pude leer la base ("+e.code+")"})});
   claude.use("tts").then(function(x){tts=x});
@@ -391,6 +394,21 @@ function pintarAvisos(){var z=$("zonaAvisos");if(!z)return;TR.avisosEstado().the
   else if(e=="bloqueado")z.innerHTML='<div class="gris">Los avisos están bloqueados para esta página. Se habilitan en Chrome: candado de la barra → Permisos → Notificaciones → Permitir.</div>';
   else{z.innerHTML='<div>Activá los avisos para que el celular te recuerde lo agendado.</div><button class="b o ancho" id="actAv">🔔 Activar avisos en este celular</button>';
     $("actAv").onclick=function(){var b=this;b.disabled=true;b.textContent="Activando…";TR.activarAvisos().then(function(){aviso("Listo: te mandé un aviso de prueba");pintarAvisos()}).catch(function(err){b.disabled=false;b.textContent="🔔 Activar avisos en este celular";aviso(String(err&&err.message)=="permiso"?"Hay que tocar Permitir para recibir avisos":"No se pudieron activar. Probá de nuevo")})}}})}
+
+var SESION_CLAUDE="claude://claude.ai/epitaxy/local_57561f78-d94d-4b46-a966-877a7761a427";
+function pantallaActual(){return S.tab=="clientes"?(S.abierto&&S.clientes[S.abierto]?"Ficha de "+S.clientes[S.abierto].nombre:"Lista de clientes"):S.tab=="hoy"?"Calendario":"Novedades"}
+function hojaCambio(){var donde=pantallaActual();function html(){var ps=lista(S.pedidos||{}).sort(function(a,b){return(b.ts||0)-(a.ts||0)}).slice(0,8);
+  return cabHoja("Pedir un cambio en la app","Estás en: "+donde)+
+   '<div class="gris">Decí o escribí qué querés cambiar, agregar o sacar. Lo hace Claude desde la PC y la app se actualiza sola. Mientras tanto la app sigue andando igual.</div>'+
+   '<div class="dictar"><textarea id="txtCambio" placeholder="Ej: que el botón de WhatsApp sea más grande, agregar el campo metros, ordenar por fecha…"></textarea>'+micBtn("txtCambio")+'</div>'+
+   '<button class="b p ancho" id="mandarCambio" style="padding:15px;font-size:17px">Mandar el pedido</button>'+
+   (ps.length?'<div class="paso">Pedidos anteriores</div>'+ps.map(function(p){var e=p.estado=="hecho"?'<b style="color:var(--e-cobrar)">✓ Hecho</b>':p.estado=="en curso"?'<b style="color:var(--e-presupuestar)">En curso…</b>':p.estado=="no se pudo"?'<b style="color:var(--e-reclamo)">No se pudo</b>':'<b style="color:var(--e-llamar)">Pendiente</b>';
+     return'<div class="card" style="box-shadow:none;padding:10px 12px"><div class="fila" style="justify-content:space-between"><span class="gris">'+esc(p.ts?hace(p.ts):"")+(p.quien?" · "+esc(p.quien):"")+'</span>'+e+'</div><div>'+esc(p.texto)+'</div>'+(p.respuesta?'<div class="gris">Claude: '+esc(p.respuesta)+'</div>':"")+'</div>'}).join(""):"")+
+   '<a class="b ancho" href="'+SESION_CLAUDE+'">Abrir la conversación con Claude (solo en la PC)</a>'}
+  function viva(){$("hoja").innerHTML=html();ligarHoja();$("mandarCambio").onclick=async function(){var t=$("txtCambio").value.trim();if(!t)return aviso("Decí o escribí el cambio");pararDictado();this.disabled=true;
+    await db.collection("pedidos").add({texto:t,donde:donde,quien:S.yo||"",estado:"nuevo",ts:Date.now()});aviso("Pedido mandado. Te aviso acá cuando esté hecho");$("txtCambio").value=""}}
+  abrirHoja("",viva);viva()}
+$("btnCambio").onclick=hojaCambio;
 
 /* ---------- eventos ---------- */
 function ligar(){
