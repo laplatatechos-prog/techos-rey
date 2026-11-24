@@ -63,7 +63,8 @@ h2{font:700 13.5px var(--display);text-transform:uppercase;letter-spacing:.8px;c
 .buscar{width:100%;font:16px var(--texto);padding:12px 14px;border-radius:12px;border:1px solid var(--linea);background:var(--sup);color:var(--fg);margin-bottom:10px}
 /* Planilla */
 .planilla{background:var(--sup);border:1px solid var(--linea);border-radius:14px;box-shadow:var(--sombra);overflow:hidden}
-.fila-t{display:grid;grid-template-columns:7px minmax(0,1.3fr) auto minmax(0,1.5fr) minmax(0,.8fr) auto;gap:0 14px;align-items:center;border-top:1px solid var(--linea);padding:10px 12px 10px 0;cursor:pointer}
+.fila-t{display:grid;grid-template-columns:6px minmax(0,1fr) auto minmax(0,1.6fr) minmax(0,.8fr) auto;gap:0 14px;align-items:center;border-top:1px solid var(--linea);padding:7px 10px 7px 0;cursor:pointer}
+.c-q{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .fila-t:first-child{border-top:0}
 .fila-t:hover{background:var(--sup2)}
 .fila-t .banda{align-self:stretch;background:var(--c);border-radius:0 4px 4px 0}
@@ -80,8 +81,11 @@ h2{font:700 13.5px var(--display);text-transform:uppercase;letter-spacing:.8px;c
 .ib:focus-visible,.fila-t:focus-visible{outline:3px solid var(--oro);outline-offset:2px}
 @media (max-width:759px){
   .cab{display:none}
-  .fila-t{grid-template-columns:7px minmax(0,1fr) auto;grid-template-areas:"b n e" "b q q" "b c a";gap:4px 12px;padding:12px 12px 12px 0}
-  .fila-t .banda{grid-area:b}.fila-t .c-n{grid-area:n}.fila-t .c-e{grid-area:e;justify-self:end}.fila-t .c-q{grid-area:q}.fila-t .c-c{grid-area:c;align-self:center}.fila-t .c-a{grid-area:a;justify-self:end}
+  .fila-t{grid-template-columns:6px minmax(0,1fr) auto;grid-template-areas:"b n e" "b q a" "b c a";gap:1px 10px;padding:8px 10px 8px 0}
+  .fila-t .banda{grid-area:b}.fila-t .c-n{grid-area:n;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fila-t .c-e{grid-area:e;justify-self:end}.fila-t .c-q{grid-area:q;font-size:14.5px;line-height:1.3}.fila-t .c-c{grid-area:c;font-size:13.5px}.fila-t .c-a{grid-area:a;justify-self:end;align-self:center;gap:5px}
+  .fila-t .pill{padding:2px 9px;font-size:12.5px}
+  .fila-t .ib{width:40px;height:40px;border-radius:11px}
+  .fila-t .ib svg{width:20px;height:20px}
 }
 /* Ficha */
 .volver{background:none;border:0;color:var(--fg);font:600 16px var(--texto);padding:4px 0;cursor:pointer}
@@ -243,7 +247,7 @@ function pPlanilla(){var todos=lista(S.clientes),cuenta={};todos.forEach(functio
   var h=iso();
   s+='<div class="planilla" role="table"><div class="fila-t cab" role="row"><span></span><span>Cliente</span><span>Estado</span><span>Qué quedó</span><span>Cuándo</span><span>Acciones</span></div>'+
    l.map(function(c){var e=est(c.estado),q=queQuedo(c);return'<div class="fila-t est '+e+'" role="row" tabindex="0" data-abrir="'+esc(c.id)+'"><span class="banda"></span>'+
-    '<span class="c-n"><span class="nom">'+esc(c.nombre)+'</span><br><span class="gris">'+esc(c.direccion||c.zona||"sin dirección")+'</span></span>'+
+    '<span class="c-n"><span class="nom">'+esc(c.nombre)+'</span></span>'+
     '<span class="c-e">'+pill(e,'data-cambiar="'+esc(c.id)+'"')+'</span>'+
     '<span class="c-q cel-que">'+esc(q.que)+'</span>'+
     '<span class="c-c cel-cuando'+(q.f&&q.f<h?" tarde":"")+'">'+esc(q.f?cuando(q.f,q.h):"Sin día")+'</span>'+
