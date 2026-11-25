@@ -252,7 +252,7 @@ function pintar(){document.querySelectorAll("#nav button").forEach(function(b){b
   $("app").innerHTML=S.tab=="clientes"?(S.abierto&&S.clientes[S.abierto]?pFicha():pPlanilla()):S.tab=="hoy"?pCalendario():pNovedades();ligar();
   var bu=$("buscar");if(bu&&S._foco){bu.focus();bu.setSelectionRange(bu.value.length,bu.value.length)}}
 
-function pPlanilla(){var todos=lista(S.clientes),cuenta={},abiertos=0;todos.forEach(function(c){var e=est(c.estado);cuenta[e]=(cuenta[e]||0)+1;if(CERRADOS.indexOf(e)<0)abiertos++});
+function pPlanilla(){var todos=lista(S.clientes).filter(function(c){return!c.noCliente}),cuenta={},abiertos=0;todos.forEach(function(c){var e=est(c.estado);cuenta[e]=(cuenta[e]||0)+1;if(CERRADOS.indexOf(e)<0)abiertos++});
   var orden=ESTADOS.slice().sort(function(a,b){return ORDEN[a]-ORDEN[b]});
   var l=todos.filter(function(c){var e=est(c.estado);return(S.filtro?e==S.filtro:CERRADOS.indexOf(e)<0)&&(!S.buscar||(c.nombre+" "+(c.nombreWA||"")+" "+(c.direccion||"")+" "+(c.telefono||"")+" "+(c.zona||"")).toLowerCase().indexOf(S.buscar)>=0)});
   l.sort(function(a,b){var d=ORDEN[est(a.estado)]-ORDEN[est(b.estado)];if(d)return d;var qa=queQuedo(a),qb=queQuedo(b);return(qa.f||"9")<(qb.f||"9")?-1:1});
@@ -326,7 +326,8 @@ function cabHoja(t,sub){return'<div class="fila" style="justify-content:space-be
 function ligarHoja(){var h=$("hoja");h.querySelectorAll("[data-cerrar]").forEach(function(b){b.onclick=cerrarHoja});h.querySelectorAll("[data-mic]").forEach(function(b){b.onclick=function(){dictar(b)}})}
 
 function hojaEstado(cid){var c=cli(cid),e=est(c.estado);
-  abrirHoja(cabHoja("¿En qué estado está?",c.nombre)+'<div class="chips est-ch">'+ESTADOS.map(function(x){return'<button class="est '+x+'" data-e="'+x+'" aria-pressed="'+(x==e)+'">'+NOMBRE_E[x]+'</button>'}).join("")+'</div><div class="gris">Al tocar uno, queda guardado.</div>');
+  abrirHoja(cabHoja("¿En qué estado está?",c.nombre)+'<div class="chips est-ch">'+ESTADOS.map(function(x){return'<button class="est '+x+'" data-e="'+x+'" aria-pressed="'+(x==e)+'">'+NOMBRE_E[x]+'</button>'}).join("")+'</div><div class="gris">Al tocar uno, queda guardado.</div><button class="b ancho" id="noCli" style="margin-top:6px">No es cliente (familia, conocido): no mostrarlo más</button>');
+  $("noCli").onclick=async function(){try{await db.doc("clientes/"+cid).update({noCliente:true,estado:"nova",ts:Date.now()});aviso(c.nombre+" ya no aparece");S.abierto=null;cerrarHoja()}catch(err){aviso("No se pudo guardar")}};
   $("hoja").querySelectorAll("[data-e]").forEach(function(b){b.onclick=async function(){var x=b.dataset.e,t=trabajoActivo(cid);
     try{await db.doc("clientes/"+cid).update({estado:x,ts:Date.now()});if(t)await db.doc("trabajos/"+t.id).update({estado:x,ts:Date.now(),hecho:x=="terminado"});await nota(cid,"Estado → "+NOMBRE_E[x]);aviso(c.nombre+": "+NOMBRE_E[x]);cerrarHoja()}catch(err){aviso("No se pudo guardar")}}})}
 
@@ -488,6 +489,8 @@ function dictar(btn){var campo=$(btn.dataset.mic);
   des.push(dict.onState(function(r){if(r.state=="idle"){btn.dataset.on="0";dictando=null;des.forEach(function(f){try{f()}catch(e){}});des=[]}}));
   p.catch(function(e){btn.dataset.on="0";dictando=null;if(e&&e.code!="stopped"){campo.focus();aviso(e.code=="not_granted"?"Sin permiso de micrófono: usá el del teclado":"Usá el micrófono del teclado")}})}
 
+function irHash(){var m=location.hash.match(/^#cliente-(.+)$/);if(m){S.tab="clientes";S.abierto=decodeURIComponent(m[1]);pintar();scrollTo(0,0)}}
+window.addEventListener("hashchange",irHash);irHash();
 iniciar();
 })();
 </script>
