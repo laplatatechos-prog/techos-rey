@@ -60,7 +60,7 @@ h2{font:700 13.5px var(--display);text-transform:uppercase;letter-spacing:.8px;c
 .filtros button.est::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--c)}
 .filtros button[aria-pressed="true"]{border-color:var(--fg);background:var(--fg);color:var(--sup)}
 .filtros button[aria-pressed="true"] .n{color:var(--sup)}
-.buscar{width:100%;font:16px var(--texto);padding:12px 14px;border-radius:12px;border:1px solid var(--linea);background:var(--sup);color:var(--fg);margin-bottom:10px}
+.buscar{width:100%;font:16px var(--texto);padding:9px 12px;border-radius:12px;border:1px solid var(--linea);background:var(--sup);color:var(--fg);margin-bottom:10px}
 /* Planilla */
 .planilla{background:var(--sup);border:1px solid var(--linea);border-radius:14px;box-shadow:var(--sombra);overflow:hidden}
 .fila-t{display:grid;grid-template-columns:6px minmax(0,1fr) auto minmax(0,1.6fr) minmax(0,.8fr) auto;gap:0 14px;align-items:center;border-top:1px solid var(--linea);padding:7px 10px 7px 0;cursor:pointer}
@@ -87,6 +87,21 @@ h2{font:700 13.5px var(--display);text-transform:uppercase;letter-spacing:.8px;c
   .fila-t .ib{width:40px;height:40px;border-radius:11px}
   .fila-t .ib svg{width:20px;height:20px}
 }
+/* Lista apilada: una fila finita por cliente, con el color del estado */
+.lista-cli{display:flex;flex-direction:column;gap:4px}
+.fcli{display:flex;align-items:center;gap:8px;min-height:52px;padding:5px 6px 5px 10px;border-radius:10px;border:1px solid var(--linea);border-left:6px solid var(--c);background:linear-gradient(90deg,var(--f) 0%,var(--sup) 70%);cursor:pointer}
+.fcli:focus-visible{outline:3px solid var(--oro);outline-offset:2px}
+.f-txt{flex:1;min-width:0}
+.f-l1{display:flex;align-items:center;gap:6px;min-width:0}
+.f-nom{font:700 15px/1.25 var(--display);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.f-nom.sin{color:var(--suave)}
+.f-est{flex:none;font:700 11px var(--texto);padding:1px 7px;border-radius:10px;border:0;background:var(--c);color:#fff;cursor:pointer}
+.f-l2{font-size:12.5px;line-height:1.3;color:var(--suave);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.f-cuando{color:var(--fg);font-weight:600;font-variant-numeric:tabular-nums}
+.f-cuando.tarde{color:var(--e-reclamo)}
+.f-acc{display:flex;gap:4px;flex:none}
+.f-acc .ib{width:34px;height:34px;border-radius:9px}
+.f-acc .ib svg{width:17px;height:17px}
 /* Grilla de tarjetas */
 .grilla{display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:8px}
 .tarj{background:var(--sup);border:1px solid var(--linea);border-top:5px solid var(--c);border-radius:12px;padding:8px 9px 7px;display:flex;flex-direction:column;gap:3px;min-width:0;cursor:pointer;box-shadow:var(--sombra)}
@@ -156,7 +171,7 @@ input:focus-visible,textarea:focus-visible{outline:3px solid var(--oro);outline-
 #aviso{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--fg);color:#fff;padding:10px 18px;border-radius:22px;font-size:15px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:20;max-width:86%;text-align:center}
 #aviso.ver{opacity:1}
 #callar{position:fixed;z-index:13;right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(84px + env(safe-area-inset-bottom,0px));box-shadow:0 3px 10px rgba(10,15,35,.2)}
-#btnCambio{position:fixed;z-index:7;right:calc(12px + env(safe-area-inset-right,0px));bottom:calc(78px + env(safe-area-inset-bottom,0px));font:600 13.5px var(--texto);padding:8px 12px;border-radius:20px;border:1px solid var(--linea);background:var(--sup);color:var(--suave);box-shadow:0 3px 10px rgba(10,15,35,.15);cursor:pointer}
+#btnCambio{position:fixed;z-index:6;right:calc(12px + env(safe-area-inset-right,0px));top:calc(14px + env(safe-area-inset-top,0px));font:600 12.5px var(--texto);padding:6px 10px;border-radius:16px;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.12);color:#fff;cursor:pointer}
 #btnCambio:focus-visible{outline:3px solid var(--oro);outline-offset:2px}
 #quienEntra{position:fixed;inset:0;z-index:50;background:var(--bg);display:grid;place-items:center;padding:20px}
 .qe-caja{background:var(--sup);border:1px solid var(--linea);border-radius:20px;padding:28px 24px;display:flex;flex-direction:column;gap:12px;align-items:center;width:100%;max-width:340px;box-shadow:var(--sombra)}
@@ -179,7 +194,7 @@ input:focus-visible,textarea:focus-visible{outline:3px solid var(--oro);outline-
 <div id="velo" hidden></div>
 <div id="hoja" hidden role="dialog" aria-modal="true"></div>
 <div id="aviso" role="status"></div>
-<button id="btnCambio" aria-label="Pedir un cambio en la app">✏️ Pedir un cambio</button>
+<button id="btnCambio" aria-label="Pedir un cambio en la app">✏️ Cambio</button>
 <button id="callar" class="b p" hidden>■ Callar</button>
 
 <script src="puente.js"></script>
@@ -260,13 +275,11 @@ function pPlanilla(){var todos=lista(S.clientes).filter(function(c){return!c.noC
   s+='<div class="filtros"><button data-filtro="" aria-pressed="'+(!S.filtro)+'">En marcha <span class="n">'+abiertos+'</span></button>'+orden.filter(function(e){return cuenta[e]}).map(function(e){return'<button class="est '+e+'" data-filtro="'+e+'" aria-pressed="'+(S.filtro==e)+'">'+NOMBRE_E[e]+' <span class="n">'+cuenta[e]+'</span></button>'}).join("")+'<button data-nuevo style="border-style:dashed">+ Nuevo</button></div>';
   if(!l.length)return s+'<div class="card vacio">'+(todos.length?"No hay clientes acá.":"Todavía no hay clientes. Tocá “+ Nuevo”.")+'</div>';
   var h=iso();
-  s+='<div class="grilla">'+l.map(function(c){var e=est(c.estado),q=queQuedo(c);
-    return'<div class="tarj est '+e+'" tabindex="0" data-abrir="'+esc(c.id)+'">'+
-     '<div class="t-cab"><span class="t-nom'+(c._sinNombre?' sin':'')+'">'+esc(c.nombre)+'</span></div>'+
-     '<button class="t-est" data-cambiar="'+esc(c.id)+'">'+NOMBRE_E[e]+'</button>'+
-     '<div class="t-que">'+esc(q.que)+'</div>'+
-     '<div class="t-cuando'+(q.f&&q.f<h&&CERRADOS.indexOf(e)<0?" tarde":"")+'">'+esc(q.f?cuando(q.f,q.h):"Sin día")+'</div>'+
-     '<div class="t-acc">'+(c.telefono?'<a class="ib wa" href="'+esc(waLink(c.telefono))+'" target="_blank" rel="noopener" aria-label="WhatsApp de '+esc(c.nombre)+'" data-stop>'+IC.wa+'</a>':'<span class="ib vac"></span>')+'<button class="ib" aria-label="Agendar para '+esc(c.nombre)+'" data-agendar="'+esc(c.id)+'">'+IC.cal+'</button><button class="ib" aria-label="Escuchar a '+esc(c.nombre)+'" data-oir="'+esc(c.id)+'">'+IC.oir+'</button></div></div>'}).join("")+'</div>';
+  s+='<div class="lista-cli">'+l.map(function(c){var e=est(c.estado),q=queQuedo(c),tarde=q.f&&q.f<h&&CERRADOS.indexOf(e)<0;
+    return'<div class="fcli est '+e+'" tabindex="0" data-abrir="'+esc(c.id)+'">'+
+     '<div class="f-txt"><div class="f-l1"><span class="f-nom'+(c._sinNombre?' sin':'')+'">'+esc(c.nombre)+'</span><button class="f-est" data-cambiar="'+esc(c.id)+'">'+NOMBRE_E[e]+'</button></div>'+
+     '<div class="f-l2"><span class="f-cuando'+(tarde?" tarde":"")+'">'+esc(q.f?cuando(q.f,q.h):"Sin día")+'</span> · '+esc(q.que)+'</div></div>'+
+     '<div class="f-acc">'+(c.telefono?'<a class="ib wa" href="'+esc(waLink(c.telefono))+'" target="_blank" rel="noopener" aria-label="WhatsApp de '+esc(c.nombre)+'" data-stop>'+IC.wa+'</a>':"")+'<button class="ib" aria-label="Agendar para '+esc(c.nombre)+'" data-agendar="'+esc(c.id)+'">'+IC.cal+'</button></div></div>'}).join("")+'</div>';
   return s}
 
 function pFicha(){var c=S.clientes[S.abierto],e=est(c.estado),q=queQuedo(c),ags=agendaDe(S.abierto),ch=chatDe(S.abierto),hs=lista(S.historia).filter(function(n){return n.clienteId==S.abierto}).sort(function(a,b){return(b.ts||0)-(a.ts||0)}),t=trabajoActivo(S.abierto);
