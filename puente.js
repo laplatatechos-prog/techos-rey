@@ -77,7 +77,8 @@ window.TR={
     .then(function(sub){return fetch(FN,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({suscribir:{persona:quien(),sub:sub.toJSON()}})})})
     .then(function(){return fetch(FN,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({probar:true})})})},
   gcalLink:function(a,c){var f=a.fecha.replace(/-/g,""),url="https://calendar.google.com/calendar/render?action=TEMPLATE&text="+encodeURIComponent(a.que+" – "+(c.nombre||""))+"&location="+encodeURIComponent([c.direccion,c.zona].filter(Boolean).join(", "))+"&details="+encodeURIComponent("Techos Rey · Clientes"+(c.telefono?"\nTel "+c.telefono:""));
-    if(a.hora){var h=a.hora.replace(":",""),fin=new Date(a.fecha+"T"+a.hora+":00");fin.setHours(fin.getHours()+1);url+="&dates="+f+"T"+h+"00/"+fin.getFullYear()+("0"+(fin.getMonth()+1)).slice(-2)+("0"+fin.getDate()).slice(-2)+"T"+("0"+fin.getHours()).slice(-2)+("0"+fin.getMinutes()).slice(-2)+"00&ctz=America/Argentina/Buenos_Aires"}
+    if(a.dias>1){var d0=new Date(a.fecha+"T12:00:00"),d1=new Date(d0.getTime()+a.dias*864e5);function ymd(x){return x.getFullYear()+("0"+(x.getMonth()+1)).slice(-2)+("0"+x.getDate()).slice(-2)}url+="&dates="+ymd(d0)+"/"+ymd(d1)}
+    else if(a.hora){var h=a.hora.replace(":",""),fin=new Date(a.fecha+"T"+a.hora+":00");fin.setMinutes(fin.getMinutes()+(Number(a.duracion)||60));url+="&dates="+f+"T"+h+"00/"+fin.getFullYear()+("0"+(fin.getMonth()+1)).slice(-2)+("0"+fin.getDate()).slice(-2)+"T"+("0"+fin.getHours()).slice(-2)+("0"+fin.getMinutes()).slice(-2)+"00&ctz=America/Argentina/Buenos_Aires"}
     else{var d=new Date(a.fecha+"T12:00:00");d.setDate(d.getDate()+1);url+="&dates="+f+"/"+d.getFullYear()+("0"+(d.getMonth()+1)).slice(-2)+("0"+d.getDate()).slice(-2)}
     return url}
 };

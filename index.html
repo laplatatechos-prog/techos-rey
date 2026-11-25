@@ -293,11 +293,11 @@ function pFicha(){var c=S.clientes[S.abierto],e=est(c.estado),q=queQuedo(c),ags=
      '<button data-conv>'+IC.chat+'Conversación</button>'+
      (c.telefono?'<button class="wa" data-escribir>'+IC.wa+'WhatsApp</button>':'<button data-datos>'+IC.wa+'Poner teléfono</button>')+
      '<button data-agendar="'+esc(c.id)+'">'+IC.cal+'Agendar</button>'+
-     '<button data-cambiar="'+esc(c.id)+'">'+IC.est+'Estado</button>'+
+     '<button data-cambiar="'+esc(c.id)+'">'+IC.est+'¿Qué sigue?</button>'+
     '</div></div>';
   if(c.resumenChat||c.sugerencia)s+='<div class="card"><b>Resumen de la conversación</b>'+(c.resumenChat?'<div>'+esc(c.resumenChat)+'</div>':"")+(c.sugerencia&&c.telefono?'<div class="gris">Para mandarle:</div><div style="background:#dcf5e3;border-radius:10px;padding:10px 12px">'+esc(c.sugerencia)+'</div><div class="fila"><button class="b wa" data-escribir="sug">'+IC.wa+'Mandale esto</button></div>':"")+'</div>';
   s+='<div class="card"><div class="fila" style="justify-content:space-between"><b>Calendario de '+esc(c.nombre.split(" ")[0])+'</b><button class="b" data-agendar="'+esc(c.id)+'">+ Agendar</button></div>'+
-    (ags.length?ags.map(function(a){return'<div class="ev"><span class="h'+(a.fecha<iso()&&a.estado!="hecho"?" tarde":"")+'">'+esc(cuando(a.fecha,a.hora))+'</span><span style="flex:1;min-width:0">'+esc(a.que)+(a.estado=="hecho"?' <span class="gris">· hecho</span>':"")+'<br><span class="gris">'+esc(textoAviso(a.avisos))+(a.gcal?" · en Google Calendar":"")+'</span>'+(!a.gcal&&a.estado!="hecho"?'<br><a class="b" style="margin-top:6px;padding:7px 11px;font-size:14px" target="_blank" rel="noopener" data-gcal="'+esc(a.id)+'" href="'+esc(TR.gcalLink(a,c))+'">Pasar a Google Calendar</a>':"")+'</span>'+(a.estado!="hecho"?'<button class="b" data-hecho="'+esc(a.id)+'">Hecho</button>':"")+'</div>'}).join(""):'<div class="gris">Nada agendado. Tocá “+ Agendar”.</div>')+'</div>';
+    (ags.length?ags.map(function(a){return'<div class="ev"><span class="h'+(a.fecha<iso()&&a.estado!="hecho"?" tarde":"")+'">'+esc(cuando(a.fecha,a.hora))+'</span><span style="flex:1;min-width:0">'+esc(a.que)+(a.estado=="hecho"?' <span class="gris">· hecho</span>':"")+'<br><span class="gris">'+esc((rango(a)?rango(a)+" · ":"")+textoAviso(a.avisos))+(a.gcal?" · en Google Calendar":"")+'</span>'+(!a.gcal&&a.estado!="hecho"?'<br><a class="b" style="margin-top:6px;padding:7px 11px;font-size:14px" target="_blank" rel="noopener" data-gcal="'+esc(a.id)+'" href="'+esc(TR.gcalLink(a,c))+'">Pasar a Google Calendar</a>':"")+'</span>'+(a.estado!="hecho"?'<button class="b" data-hecho="'+esc(a.id)+'">Hecho</button>':"")+'</div>'}).join(""):'<div class="gris">Nada agendado. Tocá “+ Agendar”.</div>')+'</div>';
   s+='<div class="card"><div class="fila" style="justify-content:space-between"><b>Datos</b><button class="b" data-datos>Editar</button></div><dl class="datos"><dt>Teléfono</dt><dd>'+esc(c.telefono?telLindo(c.telefono):"—")+'</dd><dt>Dirección</dt><dd>'+esc(c.direccion||"—")+(c.zona?", "+esc(c.zona):"")+'</dd>'+(t?'<dt>Trabajo</dt><dd>'+esc(t.descripcion||t.tipo||"—")+'</dd>'+(t.monto?'<dt>Precio</dt><dd>$'+Number(t.monto).toLocaleString("es-AR")+'</dd>':""):"")+(c.origen?'<dt>Llegó por</dt><dd>'+esc(c.origen)+'</dd>':"")+(c.notas?'<dt>Notas</dt><dd>'+esc(c.notas)+'</dd>':"")+'</dl>'+
     (c.direccion?'<div class="fila"><a class="b" target="_blank" rel="noopener" href="https://www.google.com/maps/search/'+encodeURIComponent(c.direccion+", "+(c.zona||"La Plata"))+'">'+IC.mapa+'Cómo llegar</a></div>':"")+'</div>';
   s+='<div class="card"><div class="fila" style="justify-content:space-between"><b>Anotar algo</b></div><div class="dictar"><textarea id="txtNota" placeholder="Escribí o tocá el micrófono y dictá"></textarea>'+micBtn("txtNota")+'</div><div class="fila"><button class="b p" data-anotar>Guardar nota</button></div>'+
@@ -307,7 +307,7 @@ function pFicha(){var c=S.clientes[S.abierto],e=est(c.estado),q=queQuedo(c),ags=
 function pCalendario(){var h=iso(),ags=agendaDe().filter(function(a){return a.estado!="hecho"&&S.clientes[a.clienteId]});
   var hoy=ags.filter(function(a){return a.fecha<=h}),prox=ags.filter(function(a){return a.fecha>h});
   var s='<div class="pila" style="max-width:720px;margin:0 auto"><button class="b p ancho" data-oir-dia style="padding:15px;font:700 17px var(--display)">'+IC.oir.replace("<svg",'<svg width="22" height="22"')+' Escuchar lo de hoy</button>';
-  function bloque(tit,l,v){return"<h2>"+tit+"</h2>"+(l.length?'<div class="card">'+l.map(function(a){var c=cli(a.clienteId);return'<div class="ev est '+est(c.estado)+'" style="cursor:pointer;padding:6px 0;border-bottom:1px solid var(--linea)" data-ir="'+esc(a.clienteId)+'"><span class="h'+(a.fecha<h?" tarde":"")+'">'+esc(a.fecha<h?"Atrasado":a.fecha==h?(a.hora||"Hoy"):cuando(a.fecha,a.hora))+'</span><span style="flex:1;min-width:0"><b>'+esc(c.nombre)+'</b> · '+esc(a.que)+'<br><span class="gris">'+esc(c.direccion||"")+'</span></span></div>'}).join("")+'</div>':'<div class="card vacio">'+v+'</div>')}
+  function bloque(tit,l,v){return"<h2>"+tit+"</h2>"+(l.length?'<div class="card">'+l.map(function(a){var c=cli(a.clienteId);return'<div class="ev est '+est(c.estado)+'" style="cursor:pointer;padding:6px 0;border-bottom:1px solid var(--linea)" data-ir="'+esc(a.clienteId)+'"><span class="h'+(a.fecha<h?" tarde":"")+'">'+esc(a.fecha<h?"Atrasado":a.fecha==h?(a.hora||"Hoy"):cuando(a.fecha,a.hora))+'</span><span style="flex:1;min-width:0"><b>'+esc(c.nombre)+'</b> · '+esc(a.que)+'<br><span class="gris">'+esc([rango(a),c.direccion].filter(Boolean).join(" · "))+'</span></span></div>'}).join("")+'</div>':'<div class="card vacio">'+v+'</div>')}
   s+=bloque("Hoy",hoy,"Nada agendado para hoy.")+bloque("Próximos días",prox,"Nada agendado para los próximos días.");
   s+='<h2>Avisos en este celular</h2><div class="card" id="zonaAvisos"><div class="gris">Revisando…</div></div><div class="fila"><a class="b" target="_blank" rel="noopener" href="https://calendar.google.com/calendar/r">Abrir Google Calendar</a><button class="b" data-quien>Entrar como otra persona ('+esc(TR.quien()||"?")+')</button></div></div>';setTimeout(pintarAvisos,0);return s}
 function pGcal(){if(!mcp)return'<div class="gris">Se ve cuando tu Google Calendar está conectado.</div>';
@@ -343,6 +343,74 @@ function hojaEstado(cid){var c=cli(cid),e=est(c.estado);
   $("noCli").onclick=async function(){try{await db.doc("clientes/"+cid).update({noCliente:true,estado:"nova",ts:Date.now()});aviso(c.nombre+" ya no aparece");S.abierto=null;cerrarHoja()}catch(err){aviso("No se pudo guardar")}};
   $("hoja").querySelectorAll("[data-e]").forEach(function(b){b.onclick=async function(){var x=b.dataset.e,t=trabajoActivo(cid);
     try{await db.doc("clientes/"+cid).update({estado:x,ts:Date.now()});if(t)await db.doc("trabajos/"+t.id).update({estado:x,ts:Date.now(),hecho:x=="terminado"});await nota(cid,"Estado → "+NOMBRE_E[x]);aviso(c.nombre+": "+NOMBRE_E[x]);cerrarHoja()}catch(err){aviso("No se pudo guardar")}}})}
+
+/* ---------- ¿Qué sigue? (estado + agenda con duración y huecos libres) ---------- */
+var DUR_E={llamar:15,visita:60,presupuestar:30,ejecutar:240,cobrar:15,reclamo:60};
+var SIG_E={llamar:"visita",visita:"presupuestar",presupuestar:"ejecutar",ejecutar:"cobrar",cobrar:"terminado",reclamo:"terminado",terminado:"terminado",nova:"llamar"};
+var DURS=[{m:15,t:"15 min"},{m:30,t:"30 min"},{m:60,t:"1 hora"},{m:120,t:"2 horas"},{m:240,t:"Medio día"},{d:1,t:"1 día"},{d:2,t:"2 días"},{d:3,t:"3 días"},{d:6,t:"1 semana"}];
+var J_INI=8*60,J_FIN=19*60;
+function aMin(h){var p=String(h||"").split(":");return Number(p[0])*60+Number(p[1]||0)}
+function aHora(m){return("0"+Math.floor(m/60)).slice(-2)+":"+("0"+(m%60)).slice(-2)}
+function hLinda(m){return Math.floor(m/60)+(m%60?":"+("0"+(m%60)).slice(-2):"")}
+function sumaDias(f,n){return iso(new Date(fd(f).getTime()+n*864e5))}
+function textoDur(a){if(a.dias>1)return a.dias+" días";var m=Number(a.duracion)||0;if(!m)return"";return m<60?m+" min":m==240?"medio día":m>=600?"todo el día":(m/60)+" h"}
+function rango(a){if(a.dias>1)return"Del "+cuando(a.fecha).toLowerCase()+" al "+cuando(sumaDias(a.fecha,a.dias-1)).toLowerCase();if(!a.hora)return"";var i=aMin(a.hora);return hLinda(i)+" a "+hLinda(i+(Number(a.duracion)||60))+" h"}
+/* lo que ocupa un día: bloques {i,f,que,cli} en minutos; los de varios días ocupan la jornada */
+function ocupado(f,sinId){var out=[];agendaDe().forEach(function(a){if(a.estado=="hecho"||a.id==sinId||!S.clientes[a.clienteId])return;var dias=Number(a.dias)||1;
+  if(dias>1){if(f>=a.fecha&&f<=sumaDias(a.fecha,dias-1))out.push({i:J_INI,f:J_FIN,que:a.que,cli:cli(a.clienteId).nombre,todo:true});return}
+  if(a.fecha!=f)return;if(!a.hora){out.push({i:-1,f:-1,que:a.que,cli:cli(a.clienteId).nombre,sinHora:true});return}
+  var i=aMin(a.hora);out.push({i:i,f:i+(Number(a.duracion)||60),que:a.que,cli:cli(a.clienteId).nombre})});
+  return out.sort(function(a,b){return a.i-b.i})}
+function huecos(f,dur){var oc=ocupado(f).filter(function(o){return!o.sinHora}),desde=J_INI,res=[];
+  if(f==iso()){var n=new Date(),m=n.getHours()*60+n.getMinutes();desde=Math.max(J_INI,Math.ceil((m+10)/30)*30)}
+  for(var s=desde;s+dur<=J_FIN;s+=30){var choca=oc.some(function(o){return s<o.f&&s+dur>o.i});if(!choca)res.push(s)}
+  return res}
+function hojaSigue(cid){var c=cli(cid),e=est(c.estado),pe=proxEvento(cid);
+  var st={paso:pe?SIG_E[e]:(CERRADOS.indexOf(e)>=0?"llamar":e),dur:null,dias:0,fecha:iso(),hora:"",avisos:[60],que:null};
+  function ponDur(){var m=DUR_E[st.paso];st.dias=st.paso=="ejecutar"?0:0;st.dur=m||60}
+  ponDur();
+  var dias=[];for(var i=0;i<10;i++){var d=new Date(Date.now()+i*864e5);if(d.getDay()==0)continue;dias.push({f:iso(d),t:i==0?"Hoy":i==1?"Mañana":mayus(DIAS[d.getDay()]).slice(0,3)+" "+d.getDate()})}
+  function html(){var cerrado=CERRADOS.indexOf(st.paso)>=0,s=cabHoja("¿Qué sigue?",c.nombre+" · ahora: "+NOMBRE_E[e]);
+    s+='<div class="paso">1 · ¿Qué es lo próximo?</div><div class="chips est-ch">'+ESTADOS.map(function(x){return'<button class="est '+x+'" data-paso="'+x+'" aria-pressed="'+(x==st.paso)+'">'+NOMBRE_E[x]+(DUR_E[x]?' <small style="opacity:.75">'+(DUR_E[x]<60?DUR_E[x]+"′":DUR_E[x]==240?"½ día":DUR_E[x]/60+" h")+'</small>':"")+'</button>'}).join("")+'</div>';
+    if(cerrado)return s+'<div class="gris">'+(st.paso=="terminado"?"Queda como terminado y sale de “En marcha”.":"Queda como “No va” y sale de “En marcha”.")+'</div><button class="b p ancho" id="sgCerrar" style="padding:15px;font-size:17px">Guardar: '+NOMBRE_E[st.paso]+'</button>'+
+      '<button class="b ancho" id="noCli">No es cliente (familia, conocido): no mostrarlo más</button>';
+    s+='<div class="paso">2 · ¿Cuánto lleva?</div><div class="chips" id="sgDur">'+DURS.map(function(x,k){var on=x.d?st.dias==x.d:(!st.dias&&st.dur==x.m);return'<button data-k="'+k+'" aria-pressed="'+on+'">'+x.t+'</button>'}).join("")+'</div>';
+    s+='<div class="paso">3 · ¿Qué día?</div><div class="chips" id="sgDias">'+dias.map(function(d){var oc=ocupado(d.f),lleno=oc.some(function(o){return o.todo}),n=oc.length;return'<button data-f="'+d.f+'" aria-pressed="'+(d.f==st.fecha)+'"'+(lleno?' style="opacity:.55"':"")+'>'+d.t+(n?' <small style="opacity:.7">·'+(lleno?"lleno":n)+'</small>':"")+'</button>'}).join("")+'</div><input type="date" id="sgFecha" aria-label="Otro día" value="'+st.fecha+'">';
+    var oc=ocupado(st.fecha);
+    s+='<div class="card" style="box-shadow:none;padding:10px 12px;background:var(--bg)"><b>'+esc(mayus(cuando(st.fecha)))+'</b>'+(oc.length?oc.map(function(o){return'<div class="gris" style="color:var(--fg)">'+(o.todo?"Todo el día":o.sinHora?"Sin hora":hLinda(o.i)+"–"+hLinda(o.f))+' · '+esc(o.cli)+' · '+esc(o.que)+'</div>'}).join(""):'<div class="gris">Día libre.</div>')+'</div>';
+    if(st.dias>=1){var choca=[];for(var k=0;k<st.dias;k++){var f=sumaDias(st.fecha,k);if(ocupado(f).length)choca.push(cuando(f))}
+      s+='<div class="paso">4 · Arranca a las 8 y ocupa '+st.dias+(st.dias>1?" días":" día")+'</div>'+(choca.length?'<div class="gris" style="color:var(--e-reclamo)">Ojo: ya hay cosas el '+esc(choca.join(", ").toLowerCase())+'.</div>':'<div class="gris">Esos días están libres.</div>');st.hora="08:00"}
+    else{var hs=huecos(st.fecha,st.dur);if(st.hora&&hs.indexOf(aMin(st.hora))<0&&!S._horaMano)st.hora="";
+      s+='<div class="paso">4 · Horarios libres ('+(DURS.filter(function(x){return x.m==st.dur})[0]||{t:st.dur+" min"}).t.toLowerCase()+')</div>'+(hs.length?'<div class="chips" id="sgHoras">'+hs.map(function(m){return'<button data-h="'+aHora(m)+'" aria-pressed="'+(aHora(m)==st.hora)+'">'+hLinda(m)+' h</button>'}).join("")+'</div>':'<div class="gris">No queda lugar ese día entre las 8 y las 19. Probá otro día u otra hora.</div>')+'<input type="time" id="sgHora" aria-label="Otra hora" value="'+st.hora+'">'}
+    s+='<div class="paso">5 · ¿Qué hay que hacer?</div><div class="dictar"><textarea id="sgQue" style="min-height:60px">'+esc(st.que!=null?st.que:QUE_E[st.paso])+'</textarea>'+micBtn("sgQue")+'</div>';
+    s+='<div class="paso">6 · ¿Cuándo te aviso?</div><div class="chips" id="sgAv">'+AVISOS.map(function(a){return'<button data-m="'+a.m+'" aria-pressed="'+(st.avisos.indexOf(a.m)>=0)+'">'+a.t+'</button>'}).join("")+'</div>';
+    s+='<button class="b p ancho" id="sgGuardar" style="padding:15px;font-size:17px">Guardar: '+NOMBRE_E[st.paso]+' '+esc(dicho(st.fecha,st.dias?"":st.hora))+'</button>';
+    s+='<button class="b ancho" id="sgSolo">Solo cambiar el estado a '+NOMBRE_E[st.paso]+', sin agendar</button>';
+    return s}
+  function viva(){var H=$("hoja"),q=$("sgQue");if(q&&st.que==null&&q.value!=QUE_E[st.paso])st.que=q.value;
+    H.innerHTML=html();ligarHoja();
+    H.querySelectorAll("[data-paso]").forEach(function(b){b.onclick=function(){var q=$("sgQue");if(q&&q.value!=QUE_E[st.paso])st.que=q.value;else st.que=null;st.paso=b.dataset.paso;st.dias=0;st.dur=DUR_E[st.paso]||60;S._horaMano=false;viva()}});
+    H.querySelectorAll("#sgDur [data-k]").forEach(function(b){b.onclick=function(){guardaQue();var x=DURS[b.dataset.k];if(x.d){st.dias=x.d}else{st.dias=0;st.dur=x.m}viva()}});
+    H.querySelectorAll("#sgDias [data-f]").forEach(function(b){b.onclick=function(){guardaQue();st.fecha=b.dataset.f;viva()}});
+    var fe=$("sgFecha");if(fe)fe.onchange=function(){if(this.value){guardaQue();st.fecha=this.value;viva()}};
+    H.querySelectorAll("#sgHoras [data-h]").forEach(function(b){b.onclick=function(){guardaQue();st.hora=b.dataset.h;S._horaMano=false;viva()}});
+    var ho=$("sgHora");if(ho)ho.onchange=function(){guardaQue();st.hora=this.value;S._horaMano=true;viva()};
+    H.querySelectorAll("#sgAv [data-m]").forEach(function(b){b.onclick=function(){var m=b.dataset.m=="noche"?"noche":Number(b.dataset.m),i=st.avisos.indexOf(m);if(i>=0)st.avisos.splice(i,1);else st.avisos.push(m);b.setAttribute("aria-pressed",i<0)}});
+    var nc=$("noCli");if(nc)nc.onclick=async function(){try{await db.doc("clientes/"+cid).update({noCliente:true,estado:"nova",ts:Date.now()});aviso(c.nombre+" ya no aparece");S.abierto=null;cerrarHoja()}catch(err){aviso("No se pudo guardar")}};
+    var sc=$("sgCerrar");if(sc)sc.onclick=function(){soloEstado(st.paso)};
+    var so=$("sgSolo");if(so)so.onclick=function(){soloEstado(st.paso)};
+    var g=$("sgGuardar");if(g)g.onclick=async function(){var que=$("sgQue").value.trim()||QUE_E[st.paso];if(!st.dias&&!st.hora)return aviso("Elegí un horario libre o poné la hora");
+      g.disabled=true;g.textContent="Guardando…";
+      try{var doc={clienteId:cid,que:que,fecha:st.fecha,hora:st.hora,duracion:st.dias?600:st.dur,avisos:st.avisos.slice(),paso:st.paso,estado:"pendiente",ts:Date.now(),por:S.yo||""};if(st.dias>1)doc.dias=st.dias;
+        await db.doc("clientes/"+cid).update({estado:st.paso,ts:Date.now()});
+        var t=trabajoActivo(cid);if(t)await db.doc("trabajos/"+t.id).update({estado:st.paso,proxima:que,fecha:st.fecha,hora:st.hora,ts:Date.now()});
+        var ref=await db.collection("agenda").add(doc);
+        await nota(cid,NOMBRE_E[st.paso]+" "+dicho(st.fecha,st.hora)+(textoDur(doc)?" ("+textoDur(doc)+")":"")+": "+que);
+        await finAgenda(ref.id,doc,c)}catch(err){g.disabled=false;aviso("No se pudo guardar")}}}
+  function guardaQue(){var q=$("sgQue");if(q&&q.value!=QUE_E[st.paso])st.que=q.value}
+  async function soloEstado(x){var t=trabajoActivo(cid);
+    try{await db.doc("clientes/"+cid).update({estado:x,ts:Date.now()});if(t)await db.doc("trabajos/"+t.id).update({estado:x,ts:Date.now(),hecho:x=="terminado"});await nota(cid,"Estado → "+NOMBRE_E[x]);aviso(c.nombre+": "+NOMBRE_E[x]);cerrarHoja()}catch(err){aviso("No se pudo guardar")}}
+  S._horaMano=false;abrirHoja("",viva);viva()}
 
 function hojaWhatsApp(cid,texto){var c=cli(cid);
   abrirHoja(cabHoja("Mensaje por WhatsApp","Para "+c.nombre+" · "+telLindo(c.telefono))+'<div class="dictar"><textarea id="txtWa" placeholder="Escribí o tocá el micrófono y dictá el mensaje">'+esc(texto||"")+'</textarea>'+micBtn("txtWa")+'</div>'+
@@ -385,12 +453,12 @@ function hojaAgendar(cid){var c=cli(cid),q=queQuedo(c),st={que:"",fecha:"",hora:
     var ref=await db.collection("agenda").add(doc);
     var t=trabajoActivo(cid);if(t)await db.doc("trabajos/"+t.id).update({proxima:st.que,fecha:st.fecha,hora:st.hora||"",ts:Date.now()});
     await nota(cid,"Agendado "+dicho(st.fecha,st.hora)+": "+st.que);
-    var ok=await alCalendario(ref.id,doc,c);
-    pasoFinal(ref.id,doc,c)}}
+    await finAgenda(ref.id,doc,c)}}
+async function finAgenda(id,doc,c){pasoFinal(id,doc,c)}
 async function alCalendario(id,a,c){if(!mcp)return false;
   var titulo=a.que+" – "+c.nombre+(c.telefono?", Tel "+soloNum(c.telefono).slice(-10):"");
   var args={calendarId:CAL,summary:titulo,location:[c.direccion,c.zona].filter(Boolean).join(", "),description:"Cargado desde Techos Rey · Clientes"};
-  var ini;if(a.hora){ini=new Date(a.fecha+"T"+a.hora+":00");var fin=new Date(ini.getTime()+36e5);args.startTime=a.fecha+"T"+a.hora+":00";args.endTime=iso(fin)+"T"+fin.toTimeString().slice(0,8)}
+  var ini;if(a.hora){ini=new Date(a.fecha+"T"+a.hora+":00");var fin=new Date(ini.getTime()+(Number(a.duracion)||60)*6e4);args.startTime=a.fecha+"T"+a.hora+":00";args.endTime=iso(fin)+"T"+fin.toTimeString().slice(0,8)}
   else{ini=new Date(a.fecha+"T00:00:00");args.allDay=true;args.startTime=a.fecha+"T00:00:00";args.endTime=iso(new Date(fd(a.fecha).getTime()+864e5))+"T00:00:00"}
   var rem=a.avisos.map(function(m){if(m=="noche"){var n=new Date(fd(a.fecha).getTime()-864e5);n.setHours(20,0,0,0);return Math.max(0,Math.round((ini-n)/60000))}return Number(m)}).filter(function(m){return m>=0&&m<=40320});
   args.overrideReminders=rem.map(function(m){return{method:"popup",minutes:m}});if(!rem.length)args.useDefaultReminders=false;
@@ -452,7 +520,7 @@ function ligar(){
   var bu=$("buscar");if(bu)bu.oninput=function(){S.buscar=bu.value.toLowerCase();S._foco=true;pintar()};
   document.querySelectorAll("[data-filtro]").forEach(function(b){b.onclick=function(){S.filtro=b.dataset.filtro;S._foco=false;pintar()}});
   document.querySelectorAll("[data-nuevo]").forEach(function(b){b.onclick=function(){hojaDatos(null)}});
-  document.querySelectorAll("[data-cambiar]").forEach(function(b){b.onclick=function(ev){ev.stopPropagation();hojaEstado(b.dataset.cambiar)}});
+  document.querySelectorAll("[data-cambiar]").forEach(function(b){b.onclick=function(ev){ev.stopPropagation();hojaSigue(b.dataset.cambiar)}});
   document.querySelectorAll("[data-agendar]").forEach(function(b){b.onclick=function(ev){ev.stopPropagation();hojaAgendar(b.dataset.agendar)}});
   document.querySelectorAll("[data-oir]").forEach(function(b){b.onclick=function(ev){ev.stopPropagation();oirCliente(b.dataset.oir)}});
   document.querySelectorAll("[data-conv]").forEach(function(b){b.onclick=function(){hojaConversacion(S.abierto)}});
