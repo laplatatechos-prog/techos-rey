@@ -7,7 +7,7 @@
 <meta name="color-scheme" content="light">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>Techos Rey · Clientes</title>
-<script>window.TR_VER="1795613747"</script>
+<script>window.TR_VER="1795613844"</script>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icono-192.png">
 <link rel="apple-touch-icon" href="icono-192.png">
@@ -104,7 +104,7 @@ h2{font:700 13.5px var(--display);text-transform:uppercase;letter-spacing:.8px;c
 .f-bot{display:flex;gap:6px}
 .bt{flex:1;min-width:0;height:27px;border-radius:8px;border:0;font:700 13px var(--texto);color:#fff;cursor:pointer;display:grid;place-items:center;text-decoration:none;white-space:nowrap}
 .bt:focus-visible{outline:3px solid var(--oro);outline-offset:2px}
-.bt.con{background:var(--wa)}.bt.cal{background:var(--azul)}.bt.res{background:var(--oro);color:var(--oro-t)}
+.bt.con{background:var(--wa)}.bt.arc{background:#6b7280;flex:.85}.f-bot .bt{font-size:12.5px}.bt.cal{background:var(--azul)}.bt.res{background:var(--oro);color:var(--oro-t)}
 .ficha-bot .bt{height:46px;font-size:16.5px;border-radius:12px}
 .lista-cli.grande .f-nom{font-size:17px}.lista-cli.grande .f-l2{font-size:13.5px;white-space:normal}.lista-cli.grande .bt{height:36px;font-size:14.5px}
 .f-l3{display:none;font-size:12.5px;line-height:1.35;color:var(--fg);opacity:.78;margin-top:2px;-webkit-box-orient:vertical;-webkit-line-clamp:1;overflow:hidden}
@@ -417,7 +417,7 @@ function archivarWA(cid){var c=cli(cid);if(c.telefono)window.open(waLink(c.telef
 function prioridad(c){var e=est(c.estado),h=iso(),pe=proxEvento(c.id);if(pasados(c.id).length)return"0";var u=chatDe(c.id).slice(-1)[0];
   if(pe&&pe.fecha==h)return"1"+(pe.hora||"99");if(u&&u.de!="yo")return"2"+(9e12-u.ts);if(pe)return"3"+pe.fecha+(pe.hora||"");return(CERRADOS.indexOf(e)>=0?"9":"4")+ORDEN[e]+(9e12-ultimaVez(c))}
 function botonesCli(c,ficha){return'<div class="f-bot">'+(c.telefono?'<a class="bt con" href="'+esc(waLink(c.telefono))+'" target="_blank" rel="noopener" data-stop>Contactar</a>':'<button class="bt con" data-tel="'+esc(c.id)+'">+ Teléfono</button>')+
-  '<button class="bt cal" data-cambiar="'+esc(c.id)+'">Calendario</button>'+(ficha?"":'<button class="bt res">Resumen</button>')+'</div>'}
+  '<button class="bt cal" data-cambiar="'+esc(c.id)+'">Calendario</button>'+(ficha?"":'<button class="bt res">Resumen</button><button class="bt arc" data-arc="'+esc(c.id)+'">'+(archivado(c)?"Desarchivar":"Archivar")+'</button>')+'</div>'}
 function filaCli(c){var e=est(c.estado),q=queQuedo(c),h=iso(),pas=pasados(c.id).length,tarde=pas||(q.f&&q.f<h&&CERRADOS.indexOf(e)<0),si=situacion(c);
   return'<div class="fcli est '+e+'" tabindex="0" data-abrir="'+esc(c.id)+'">'+
    '<div class="f-l1"><span class="f-nom'+(c._sinNombre?' sin':'')+'">'+esc(c.nombre)+'</span><button class="f-est" data-cambiar="'+esc(c.id)+'">'+NOMBRE_E[e]+'</button>'+(si.sin?'<span class="f-sin" title="Mensajes sin contestar">'+si.sin+'</span>':"")+'</div>'+
@@ -700,6 +700,7 @@ function ligar(){
   document.querySelectorAll("[data-sem]").forEach(function(b){b.onclick=function(){S.semana=sumaDias(S.semana,Number(b.dataset.sem));pintar()}});
   document.querySelectorAll("[data-blq]").forEach(function(b){b.addEventListener("click",function(ev){ev.stopPropagation();hojaBloque(b.dataset.blq)})});
   document.querySelectorAll("[data-celda]").forEach(function(d){d.onclick=function(ev){var r=d.getBoundingClientRect(),m=J_INI+Math.floor((ev.clientY-r.top)/RH)*30;var f=d.dataset.celda,h=iso();if(f<h||(f==h&&m+30<=ahoraMin()))return aviso("Ese horario ya pasó");hojaHueco(f,m)}});
+  document.querySelectorAll("[data-arc]").forEach(function(b){b.addEventListener("click",function(ev){ev.stopPropagation();var c=cli(b.dataset.arc);if(archivado(c)){archivar(b.dataset.arc,false);aviso("Volvió a la lista")}else archivarWA(b.dataset.arc)})});
   document.querySelectorAll("[data-saltar]").forEach(function(b){b.onclick=function(){S.saltados[b.dataset.saltar]=1;pintar()}});
   document.querySelectorAll("[data-dia]").forEach(function(b){b.onclick=function(){S.dia=b.dataset.dia;pintar()}});
   document.querySelectorAll("[data-meter]").forEach(function(b){b.onclick=function(){hojaSigue(b.dataset.meter,{fecha:b.dataset.f,hora:b.dataset.h})}});
