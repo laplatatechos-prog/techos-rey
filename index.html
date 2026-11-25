@@ -7,7 +7,7 @@
 <meta name="color-scheme" content="light">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>Techos Rey · Clientes</title>
-<script>window.TR_VER="1795600254"</script>
+<script>window.TR_VER="1795603350"</script>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icono-192.png">
 <link rel="apple-touch-icon" href="icono-192.png">
@@ -100,6 +100,24 @@ h2{font:700 13.5px var(--display);text-transform:uppercase;letter-spacing:.8px;c
 .f-l2{font-size:12.5px;line-height:1.3;color:var(--suave);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .f-cuando{color:var(--fg);font-weight:600;font-variant-numeric:tabular-nums}
 .f-cuando.tarde{color:var(--e-reclamo)}
+.fcli{min-height:var(--fh,52px)}
+.f-l3{display:none;font-size:12.5px;line-height:1.35;color:var(--fg);opacity:.78;margin-top:2px;-webkit-box-orient:vertical;-webkit-line-clamp:1;overflow:hidden}
+.lista-cli.grande .f-l3{display:-webkit-box}
+.lista-cli.grande .f-nom{font-size:16.5px}.lista-cli.grande .f-l2{font-size:13.5px}
+.lista-cli.muy .f-l3{-webkit-line-clamp:3;font-size:13.5px}.lista-cli.muy .f-nom{font-size:18.5px}
+.lista-cli.grande .f-acc .ib{width:40px;height:40px}.lista-cli.grande .f-acc .ib svg{width:20px;height:20px}
+.f-sin{flex:none;min-width:19px;height:19px;padding:0 5px;border-radius:10px;background:var(--wa);color:#fff;font:700 11.5px/19px var(--texto);text-align:center}
+.asis{border:1.5px solid var(--c,var(--azul));border-left:6px solid var(--c,var(--azul));background:linear-gradient(90deg,var(--f,#eef2fb) 0%,var(--sup) 80%);border-radius:14px;padding:10px 12px;margin-bottom:10px;display:flex;flex-direction:column;gap:7px}
+.asis.ok{border-color:var(--e-cobrar);border-left-color:var(--e-cobrar);background:var(--sup);color:var(--e-cobrar);font-weight:600;padding:9px 12px}
+.asis-cab{display:flex;justify-content:space-between;align-items:center;font:700 11.5px var(--texto);letter-spacing:.04em;text-transform:uppercase;color:var(--suave)}
+.asis-cab button{border:0;background:none;color:var(--azul);font:600 13.5px var(--texto);cursor:pointer;text-transform:none;letter-spacing:0}
+.asis-txt{font-size:15px;line-height:1.4}
+.asis-bot{display:flex;flex-wrap:wrap;gap:6px}.asis-bot .b{padding:8px 12px;font-size:14px}
+.situ{background:var(--bg);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:4px;font-size:14.5px;line-height:1.4}
+.situ-t{font:700 11.5px var(--texto);letter-spacing:.04em;text-transform:uppercase;color:var(--suave)}
+.situ-h{margin-top:3px;color:var(--azul)}
+.dia{gap:6px}.blq{cursor:pointer;border-left:5px solid var(--c);padding:7px 10px;border-radius:9px;background:var(--f)}
+.hueco{border:1.5px dashed var(--linea);border-radius:10px;padding:8px 10px;display:flex;flex-direction:column;gap:5px}
 .f-cuando.quieto{color:var(--e-presupuestar)}
 .aviso-quietos{display:flex;align-items:center;gap:8px;width:100%;text-align:left;font:600 14.5px var(--texto);padding:10px 12px;margin-bottom:10px;border-radius:12px;border:1.5px solid var(--e-presupuestar);background:var(--e-presupuestar-f);color:var(--fg);cursor:pointer}
 .aviso-quietos b{margin-left:auto;color:var(--e-presupuestar);white-space:nowrap}
@@ -192,8 +210,8 @@ input:focus-visible,textarea:focus-visible{outline:3px solid var(--oro);outline-
 <main id="app"><div class="vacio">Cargando los clientes…</div></main>
 <nav id="nav">
   <button data-t="clientes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.5 3.4-5.5 6.5-5.5s5.7 2 6.5 5.5"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18.5 14.8c1.6.8 2.6 2.6 3 5.2"/></svg>Clientes</button>
-  <button data-t="hoy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>Calendario</button>
-  <button data-t="avisos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>Novedades<span class="badge" id="nAv" hidden></span></button>
+  <button data-t="hoy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>Mi día</button>
+  <button data-t="avisos" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>Novedades<span class="badge" id="nAv" hidden></span></button>
 </nav>
 <div id="velo" hidden></div>
 <div id="hoja" hidden role="dialog" aria-modal="true"></div>
@@ -248,7 +266,12 @@ function proxEvento(cid){var h=iso();return agendaDe(cid).filter(function(a){ret
 function queQuedo(c){var t=trabajoActivo(c.id),ev=proxEvento(c.id);return{que:(ev&&ev.que)||(t&&t.proxima)||QUE_E[est(c.estado)],f:(ev&&ev.fecha)||(t&&t.fecha)||"",h:(ev&&ev.hora)||(t&&t.hora)||""}}
 var DIAS_QUIETO=5;
 function ultimaVez(c){var m=Math.max(Number(c.ts)||0,Number(c.ultimoMsg)||0);agendaDe(c.id).forEach(function(a){m=Math.max(m,Number(a.ts)||0,Number(a.hechoTs)||0)});return m}
-function archivado(c){if(c.archivado)return!(c.ultimoMsg&&c.ultimoMsg>(c.archivadoTs||0));return CERRADOS.indexOf(est(c.estado))>=0&&Date.now()-ultimaVez(c)>7*864e5}
+function archivado(c){var base,cuando=0;
+  if(c.waArchivado!=null&&!(c.archivado!=null&&(c.archivadoTs||0)>(c.waArchivadoTs||0))){base=c.waArchivado;cuando=c.waArchivadoTs||0}
+  else if(c.archivado!=null){base=c.archivado;cuando=c.archivadoTs||0}
+  else return CERRADOS.indexOf(est(c.estado))>=0&&Date.now()-ultimaVez(c)>7*864e5;
+  if(base&&c.ultimoMsgEl&&c.ultimoMsgEl>cuando)return false; /* volvió a escribir */
+  return!!base}
 function quieto(c){if(c.noCliente||archivado(c)||CERRADOS.indexOf(est(c.estado))>=0)return 0;if(c.esperarHasta&&c.esperarHasta>iso())return 0;if(proxEvento(c.id))return 0;var d=Math.floor((Date.now()-ultimaVez(c))/864e5);return d>=DIAS_QUIETO?d:0}
 async function archivar(cid,si){var c=cli(cid);try{await db.doc("clientes/"+cid).update({archivado:si,archivadoTs:Date.now(),ts:Date.now()});await nota(cid,si?"Archivado":"Sacado del archivo");aviso(si?c.nombre+" quedó archivado":c.nombre+" volvió a la lista")}catch(e){aviso("No se pudo guardar")}}
 function chatDe(cid){return lista(S.chats).filter(function(m){return m.clienteId==cid}).sort(function(a,b){return(a.ts||0)-(b.ts||0)})}
@@ -268,7 +291,7 @@ async function iniciar(){pintar();
   claude.use("user").then(async function(x){if(!x)return;try{var me=await x.me();S.yo=((me&&me.name)||"").split(" ")[0];sub()}catch(e){}});
 }
 function sub(){var n=novedades().length,h=iso(),hoy=agendaDe().filter(function(a){return a.fecha==h&&a.estado!="hecho"}).length;
-  $("sub").textContent=(S.yo?"Hola, "+S.yo+" · ":"")+Object.keys(S.clientes).length+" clientes"+(hoy?" · "+hoy+" para hoy":"")+(n?" · "+n+" novedades":"");
+  $("sub").textContent=(S.yo?"Hola, "+S.yo+" · ":"")+vivos().length+" en marcha"+(hoy?" · "+hoy+" para hoy":"")+(function(){var p=preguntas().length;return p?" · "+p+" pendientes":""})();
   var b=$("nAv");b.hidden=!n;b.textContent=n}
 
 /* ---------- pantallas ---------- */
@@ -276,28 +299,11 @@ function pintar(){document.querySelectorAll("#nav button").forEach(function(b){b
   $("app").innerHTML=S.tab=="clientes"?(S.abierto&&S.clientes[S.abierto]?pFicha():pPlanilla()):S.tab=="hoy"?pCalendario():pNovedades();ligar();
   var bu=$("buscar");if(bu&&S._foco){bu.focus();bu.setSelectionRange(bu.value.length,bu.value.length)}}
 
-function pPlanilla(){var todo=lista(S.clientes).filter(function(c){return!c.noCliente}),arch=todo.filter(archivado),todos=todo.filter(function(c){return!archivado(c)}),cuenta={},abiertos=0,quietos=todos.filter(quieto);todos.forEach(function(c){var e=est(c.estado);cuenta[e]=(cuenta[e]||0)+1;if(CERRADOS.indexOf(e)<0)abiertos++});
-  var orden=ESTADOS.slice().sort(function(a,b){return ORDEN[a]-ORDEN[b]});
-  var l=(S.filtro=="_arch"?arch:todos).filter(function(c){var e=est(c.estado);return(S.filtro=="_arch"?true:S.filtro?e==S.filtro:CERRADOS.indexOf(e)<0)&&(!S.buscar||(c.nombre+" "+(c.nombreWA||"")+" "+(c.direccion||"")+" "+(c.telefono||"")+" "+(c.zona||"")).toLowerCase().indexOf(S.buscar)>=0)});
-  l.sort(function(a,b){var d=ORDEN[est(a.estado)]-ORDEN[est(b.estado)];if(d)return d;var qa=queQuedo(a),qb=queQuedo(b);return(qa.f||"9")<(qb.f||"9")?-1:1});
-  var s='<input id="buscar" class="buscar" placeholder="Buscar por nombre, calle o teléfono" aria-label="Buscar" value="'+esc(S.buscar)+'">';
-  s+='<div class="filtros"><button data-filtro="" aria-pressed="'+(!S.filtro)+'">En marcha <span class="n">'+abiertos+'</span></button>'+orden.filter(function(e){return cuenta[e]}).map(function(e){return'<button class="est '+e+'" data-filtro="'+e+'" aria-pressed="'+(S.filtro==e)+'">'+NOMBRE_E[e]+' <span class="n">'+cuenta[e]+'</span></button>'}).join("")+(arch.length?'<button data-filtro="_arch" aria-pressed="'+(S.filtro=="_arch")+'">Archivados <span class="n">'+arch.length+'</span></button>':"")+'<button data-nuevo style="border-style:dashed">+ Nuevo</button></div>';
-  if(quietos.length&&!S.filtro)s+='<button class="aviso-quietos" data-quietos>💤 '+(quietos.length==1?"1 cliente sin novedades":quietos.length+" clientes sin novedades")+' hace más de '+DIAS_QUIETO+' días<b>Revisar ›</b></button>';
-  if(S.filtro=="_arch")s+='<div class="gris" style="margin-bottom:8px">Terminados y “No va” se archivan solos a la semana. Si un archivado vuelve a escribir, vuelve a la lista.</div>';
-  if(!l.length)return s+'<div class="card vacio">'+(todos.length?"No hay clientes acá.":"Todavía no hay clientes. Tocá “+ Nuevo”.")+'</div>';
-  var h=iso();
-  s+='<div class="lista-cli">'+l.map(function(c){var e=est(c.estado),q=queQuedo(c),tarde=q.f&&q.f<h&&CERRADOS.indexOf(e)<0,qd=quieto(c);
-    return'<div class="fcli est '+e+'" tabindex="0" data-abrir="'+esc(c.id)+'">'+
-     '<div class="f-txt"><div class="f-l1"><span class="f-nom'+(c._sinNombre?' sin':'')+'">'+esc(c.nombre)+'</span><button class="f-est" data-cambiar="'+esc(c.id)+'">'+NOMBRE_E[e]+'</button></div>'+
-     '<div class="f-l2"><span class="f-cuando'+(tarde?" tarde":qd?" quieto":"")+'">'+esc(q.f?cuando(q.f,q.h):qd?"💤 "+qd+" días quieto":"Sin día")+'</span> · '+esc(q.que)+'</div></div>'+
-     '<div class="f-acc">'+(c.telefono?'<a class="ib wa" href="'+esc(waLink(c.telefono))+'" target="_blank" rel="noopener" aria-label="WhatsApp de '+esc(c.nombre)+'" data-stop>'+IC.wa+'</a>':"")+'<button class="ib" aria-label="Agendar para '+esc(c.nombre)+'" data-agendar="'+esc(c.id)+'">'+IC.cal+'</button></div></div>'}).join("")+'</div>';
-  return s}
-
 function pFicha(){var c=S.clientes[S.abierto],e=est(c.estado),q=queQuedo(c),ags=agendaDe(S.abierto),ch=chatDe(S.abierto),hs=lista(S.historia).filter(function(n){return n.clienteId==S.abierto}).sort(function(a,b){return(b.ts||0)-(a.ts||0)}),t=trabajoActivo(S.abierto);
   var s='<div class="pila" style="max-width:760px;margin:0 auto"><button class="volver" data-volver>‹ Todos los clientes</button>';
   s+='<div class="card est '+e+'"><div class="fila" style="justify-content:space-between"><h1 style="font:800 27px/1.15 var(--display);margin:0">'+esc(c.nombre)+'</h1>'+pill(e,'data-cambiar="'+esc(c.id)+'"')+'</div>'+
     '<div class="gris">'+esc([c.telefono?telLindo(c.telefono):"",c.direccion,c.zona].filter(Boolean).join(" · ")||"Faltan los datos")+'</div>'+
-    '<div class="quedo"><span class="t">Qué quedó</span><span class="q">'+esc(q.que)+'</span><span>'+esc(q.f?cuando(q.f,q.h):"Sin día todavía")+'</span></div>'+
+    pSituacion(c)+
     (c.falta?'<div class="gris">Falta saber: <b style="color:var(--fg)">'+esc(c.falta)+'</b></div>':"")+
     '<div class="herr">'+
      '<button data-oir="'+esc(c.id)+'">'+IC.oir+'Escuchar</button>'+
@@ -315,12 +321,6 @@ function pFicha(){var c=S.clientes[S.abierto],e=est(c.estado),q=queQuedo(c),ags=
     (hs.length?'<details><summary class="gris" style="cursor:pointer;padding:4px 0">Notas anteriores ('+hs.length+')</summary>'+hs.map(function(n){return'<div style="border-left:3px solid var(--linea);padding:2px 0 2px 10px;margin-top:6px">'+esc(n.texto)+'<div class="gris" style="font-size:12.5px">'+(n.ts?new Date(n.ts).toLocaleString("es-AR",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):"")+(n.autor?" · "+esc(n.autor):"")+'</div></div>'}).join("")+'</details>':"")+'</div>';
   return s+'</div>'}
 
-function pCalendario(){var h=iso(),ags=agendaDe().filter(function(a){return a.estado!="hecho"&&S.clientes[a.clienteId]});
-  var hoy=ags.filter(function(a){return a.fecha<=h}),prox=ags.filter(function(a){return a.fecha>h});
-  var s='<div class="pila" style="max-width:720px;margin:0 auto"><button class="b p ancho" data-oir-dia style="padding:15px;font:700 17px var(--display)">'+IC.oir.replace("<svg",'<svg width="22" height="22"')+' Escuchar lo de hoy</button>';
-  function bloque(tit,l,v){return"<h2>"+tit+"</h2>"+(l.length?'<div class="card">'+l.map(function(a){var c=cli(a.clienteId);return'<div class="ev est '+est(c.estado)+'" style="cursor:pointer;padding:6px 0;border-bottom:1px solid var(--linea)" data-ir="'+esc(a.clienteId)+'"><span class="h'+(a.fecha<h?" tarde":"")+'">'+esc(a.fecha<h?"Atrasado":a.fecha==h?(a.hora||"Hoy"):cuando(a.fecha,a.hora))+'</span><span style="flex:1;min-width:0"><b>'+esc(c.nombre)+'</b> · '+esc(a.que)+'<br><span class="gris">'+esc([rango(a),c.direccion].filter(Boolean).join(" · "))+'</span></span></div>'}).join("")+'</div>':'<div class="card vacio">'+v+'</div>')}
-  s+=bloque("Hoy",hoy,"Nada agendado para hoy.")+bloque("Próximos días",prox,"Nada agendado para los próximos días.");
-  s+='<h2>Avisos en este celular</h2><div class="card" id="zonaAvisos"><div class="gris">Revisando…</div></div><div class="fila"><a class="b" target="_blank" rel="noopener" href="https://calendar.google.com/calendar/r">Abrir Google Calendar</a><button class="b" data-quien>Entrar como otra persona ('+esc(TR.quien()||"?")+')</button></div></div>';setTimeout(pintarAvisos,0);return s}
 function pGcal(){if(!mcp)return'<div class="gris">Se ve cuando tu Google Calendar está conectado.</div>';
   if(S.cal==null){leerCal();return'<div class="gris">Leyendo el calendario…</div>'}
   if(S.cal.error)return'<div class="gris">'+esc(S.cal.error)+'</div>';
@@ -341,6 +341,119 @@ function pNovedades(){var av=novedades(),ms=lista(S.mensajes).filter(function(m)
   s+=av.map(function(a){var c=a.clienteId?S.clientes[a.clienteId]:null;return'<div class="card'+(c?" est "+est(c.estado):"")+'" style="border-left:5px solid var(--c,var(--oro))"><b style="font-size:17px">'+esc(a.titulo)+'</b><div>'+esc(a.detalle)+'</div><div class="gris">'+esc([a.origen,a.ts?hace(a.ts):""].filter(Boolean).join(" · "))+'</div><div class="fila">'+(c?'<button class="b p" data-ir="'+esc(a.clienteId)+'">Ver cliente</button>':"")+'<button class="b" data-oir-aviso="'+esc(a.id)+'">'+IC.oir.replace("<svg",'<svg width="20" height="20"')+'Escuchar</button><button class="b" data-listo="'+esc(a.id)+'">Ya está</button></div></div>'}).join("");
   if(ms.length)s+='<h2>Para mandar desde la PC</h2>'+ms.map(function(m){return'<div class="card"><b>'+esc(cli(m.clienteId).nombre)+'</b><div>'+esc(m.texto)+'</div><div class="gris">Sale en la próxima revisión de la PC.</div></div>'}).join("");
   return s+'</div>'}
+
+/* ---------- situación de cada cliente (reglas, sin IA): WhatsApp + calendario ---------- */
+function corta(t,n){t=String(t||"").replace(/\s+/g," ").trim();return t.length>n?t.slice(0,n-1)+"…":t}
+function ayer(){return iso(new Date(Date.now()-864e5))}
+function cuandoPaso(f,h){var d=fd(f);return(f==iso()?"hoy":f==ayer()?"ayer":"el "+DIAS[d.getDay()]+" "+d.getDate())+(h?" a las "+hLinda(aMin(h)):"")}
+function ahoraMin(){var n=new Date();return n.getHours()*60+n.getMinutes()}
+/* lo agendado que ya tendría que haber pasado y nadie marcó */
+function pasados(cid){var h=iso(),m=ahoraMin();return agendaDe(cid).filter(function(a){if(a.estado=="hecho"||!S.clientes[a.clienteId])return false;var dias=Number(a.dias)||1,ult=dias>1?sumaDias(a.fecha,dias-1):a.fecha;
+  if(ult<h)return true;if(ult>h||dias>1)return false;return a.hora?aMin(a.hora)+(Number(a.duracion)||60)<=m:false})}
+function chatDatos(ch){var r={};ch.slice(-40).reverse().forEach(function(x){var t=x.texto||"";
+  if(!r.plata){var p=t.match(/\$\s?\d[\d.,]*(?:\s?mil)?|\b\d+(?:[.,]\d+)?\s?(?:mil|lucas|palos)\b/i);if(p)r.plata=p[0]+(x.de=="yo"?" (dijimos nosotros)":" (dijo el cliente)")}
+  if(!r.dir&&x.de!="yo"){var d=t.match(/\b(?:calle|diagonal|diag\.?|avenida|av\.?)\s*\d{1,3}[^.\n]{0,40}/i)||t.match(/\b\d{1,3}\s+(?:y|e\/|entre)\s+\d{1,3}(?:\s*(?:y|e)\s*\d{1,3})?/i);if(d)r.dir=d[0].trim()}
+  if(!r.dia&&x.de!="yo"){var k=t.match(/\b(?:hoy|mañana|pasado mañana|lunes|martes|mi[eé]rcoles|jueves|viernes|s[aá]bado)\b[^.\n?]{0,30}|\ba las \d{1,2}(?::\d\d)?\s*(?:hs?)?/i);if(k)r.dia=k[0].trim()}});return r}
+function situacion(c){var ch=chatDe(c.id),u=ch[ch.length-1],L=[],pas=pasados(c.id),pe=proxEvento(c.id),sin=0,e=est(c.estado);
+  for(var i=ch.length-1;i>=0&&ch[i].de!="yo";i--)sin++;
+  if(pas.length)L.push("Quedó sin confirmar: "+cuandoPaso(pas[0].fecha,pas[0].hora)+", "+pas[0].que+".");
+  if(u){if(u.de!="yo")L.push((sin>1?sin+" mensajes sin contestar. ":"Sin contestar. ")+"Escribió "+hace(u.ts)+": «"+corta(u.texto,110)+"»");
+    else L.push("Le escribiste vos "+hace(u.ts)+(Date.now()-u.ts>2*864e5?" y no contestó":"")+": «"+corta(u.texto,80)+"»")}
+  else L.push("No hay conversación de WhatsApp guardada.");
+  if(pe)L.push("Agendado: "+cuando(pe.fecha,pe.hora)+", "+pe.que+(rango(pe)?" ("+rango(pe)+")":"")+".");
+  var dt=chatDatos(ch);
+  if(dt.dia&&!pe)L.push("En el chat mencionó «"+dt.dia+"» y no hay nada agendado.");
+  if(!c.direccion)L.push(dt.dir?"Dirección que mencionó: "+dt.dir+".":"Falta la dirección.");
+  if(dt.plata)L.push("Se habló de plata: "+dt.plata+".");
+  var hacer=pas.length?"Confirmar si se hizo":u&&u.de!="yo"?"Contestarle":CERRADOS.indexOf(e)>=0?"":!pe?(e=="llamar"?"Llamarlo o escribirle":"Agendar: "+NOMBRE_E[e]):"";
+  return{lineas:L,hacer:hacer,sin:sin,pas:pas,pe:pe,ultimo:u}}
+
+/* ---------- asistente: pregunta cliente por cliente ---------- */
+S.saltados={};
+function vivos(){return lista(S.clientes).filter(function(c){return!c.noCliente&&!archivado(c)})}
+function preguntas(){var P=[],ahora=Date.now(),hoy=iso();
+  vivos().forEach(function(c){var e=est(c.estado),nom='<b>'+esc(c.nombre)+'</b>',espera=c.esperarHasta&&c.esperarHasta>hoy;
+    pasados(c.id).forEach(function(a){P.push({k:"p"+a.id,cid:c.id,aid:a.id,ord:0,t:a.fecha+(a.hora||""),
+      txt:"Quedaste con "+nom+" "+esc(cuandoPaso(a.fecha,a.hora))+": "+esc(a.que)+". <b>¿Se hizo?</b>",
+      bot:[["hizo","Sí, se hizo","p"],["reprog","No, pasarlo a otro día"],["ver","Ver cliente"]]})});
+    var ch=chatDe(c.id),u=ch[ch.length-1];
+    if(u&&u.de!="yo"&&ahora-u.ts>20*60000&&!espera)P.push({k:"c"+c.id+u.ts,cid:c.id,ord:1,t:String(9e12-u.ts),
+      txt:nom+" te escribió "+esc(hace(u.ts))+": «"+esc(corta(u.texto,120))+"». <b>¿Qué hacemos?</b>",bot:[["wa","Contestar por WhatsApp","wa"],["sigue","¿Qué sigue?"],["arch","Archivar"]]});
+    else if(CERRADOS.indexOf(e)<0&&!proxEvento(c.id)&&!pasados(c.id).length&&!espera&&ahora-ultimaVez(c)>864e5){var d=Math.floor((ahora-ultimaVez(c))/864e5);
+      P.push({k:"s"+c.id,cid:c.id,ord:2,t:String(9e12-ultimaVez(c)),txt:"<b>¿Qué pasa con</b> "+nom+"? Está en “"+NOMBRE_E[e]+"”, no tiene nada agendado"+(d>1?" y hace "+d+" días que no hay novedades":"")+".",
+        bot:[["sigue","¿Qué sigue?","p"],["esperar","Esperar 1 semana"],["arch","Archivar"]]})}});
+  return P.filter(function(p){return!S.saltados[p.k]}).sort(function(a,b){return a.ord-b.ord||(a.t<b.t?-1:1)})}
+function pAsistente(){var P=preguntas();
+  if(!P.length)return'<div class="asis ok">✓ Todo al día. No hay nada pendiente de responder.</div>';
+  var p=P[0],c=cli(p.cid);
+  return'<div class="asis est '+est(c.estado)+'"><div class="asis-cab"><span>Asistente · '+P.length+(P.length==1?" cosa pendiente":" cosas pendientes")+'</span><button data-saltar="'+esc(p.k)+'">Después ›</button></div>'+
+   '<div class="asis-txt">'+p.txt+'</div><div class="asis-bot">'+p.bot.map(function(b){
+     if(b[0]=="wa")return c.telefono?'<a class="b wa" target="_blank" rel="noopener" href="'+esc(waLink(c.telefono))+'" data-asis="wa" data-cid="'+esc(p.cid)+'">'+IC.wa+b[1]+'</a>':"";
+     return'<button class="b'+(b[2]?" "+b[2]:"")+'" data-asis="'+b[0]+'" data-cid="'+esc(p.cid)+'" data-aid="'+esc(p.aid||"")+'">'+b[1]+'</button>'}).join("")+'</div></div>'}
+async function responder(acc,cid,aid){var c=cli(cid),a=aid?S.agenda[aid]:null;
+  try{if(acc=="hizo"&&a){await db.doc("agenda/"+aid).update({estado:"hecho",hechoTs:Date.now()});await nota(cid,"Se hizo: "+a.que);aviso("Anotado como hecho. ¿Qué sigue?");hojaSigue(cid,{paso:SIG_E[a.paso||est(c.estado)]||est(c.estado)})}
+    else if(acc=="reprog"&&a){await db.doc("agenda/"+aid).update({estado:"borrado",reprogramado:true,ts:Date.now()});await nota(cid,"No se hizo: "+a.que+" (se pasa a otro día)");hojaSigue(cid,{paso:a.paso||est(c.estado),que:a.que})}
+    else if(acc=="ver"){S.tab="clientes";S.abierto=cid;pintar();scrollTo(0,0)}
+    else if(acc=="sigue")hojaSigue(cid);
+    else if(acc=="esperar"){await db.doc("clientes/"+cid).update({esperarHasta:iso(new Date(Date.now()+7*864e5))});await nota(cid,"Esperar una semana");aviso("Te lo vuelvo a preguntar en una semana")}
+    else if(acc=="arch")archivarWA(cid);
+    else if(acc=="wa"){nota(cid,"Se abrió WhatsApp para contestarle");db.doc("clientes/"+cid).update({esperarHasta:iso(new Date(Date.now()+864e5))})}}catch(e){aviso("No se pudo guardar")}}
+/* Archivar: queda archivado acá y te abre el chat para archivarlo también en WhatsApp */
+function archivarWA(cid){var c=cli(cid);if(c.telefono)window.open(waLink(c.telefono),"_blank");archivar(cid,true);if(c.telefono)setTimeout(function(){aviso("Archivalo también en WhatsApp: mantené apretado el chat → Archivar")},600)}
+
+/* ---------- lista que se agranda o achica según cuántos clientes hay ---------- */
+function prioridad(c){var e=est(c.estado),h=iso(),pe=proxEvento(c.id);if(pasados(c.id).length)return"0";var u=chatDe(c.id).slice(-1)[0];
+  if(pe&&pe.fecha==h)return"1"+(pe.hora||"99");if(u&&u.de!="yo")return"2"+(9e12-u.ts);if(pe)return"3"+pe.fecha+(pe.hora||"");return(CERRADOS.indexOf(e)>=0?"9":"4")+ORDEN[e]+(9e12-ultimaVez(c))}
+function filaCli(c){var e=est(c.estado),q=queQuedo(c),h=iso(),pas=pasados(c.id).length,tarde=pas||(q.f&&q.f<h&&CERRADOS.indexOf(e)<0),si=situacion(c);
+  var l3=(si.hacer?"→ "+si.hacer+". ":"")+(si.lineas[pas?1:0]||"");
+  return'<div class="fcli est '+e+'" tabindex="0" data-abrir="'+esc(c.id)+'">'+
+   '<div class="f-txt"><div class="f-l1"><span class="f-nom'+(c._sinNombre?' sin':'')+'">'+esc(c.nombre)+'</span><button class="f-est" data-cambiar="'+esc(c.id)+'">'+NOMBRE_E[e]+'</button>'+(si.sin?'<span class="f-sin" title="Mensajes sin contestar">'+si.sin+'</span>':"")+'</div>'+
+   '<div class="f-l2"><span class="f-cuando'+(tarde?" tarde":"")+'">'+esc(pas?"¿Se hizo?":q.f?cuando(q.f,q.h):"Sin día")+'</span> · '+esc(q.que)+'</div>'+
+   '<div class="f-l3">'+esc(l3)+'</div></div>'+
+   '<div class="f-acc">'+(c.telefono?'<a class="ib wa" href="'+esc(waLink(c.telefono))+'" target="_blank" rel="noopener" aria-label="WhatsApp de '+esc(c.nombre)+'" data-stop>'+IC.wa+'</a>':"")+'<button class="ib" aria-label="Qué sigue con '+esc(c.nombre)+'" data-cambiar="'+esc(c.id)+'">'+IC.cal+'</button></div></div>'}
+function pPlanilla(){var todo=lista(S.clientes).filter(function(c){return!c.noCliente}),arch=todo.filter(archivado),viv=todo.filter(function(c){return!archivado(c)}),verArch=S.filtro=="_arch";
+  var l=(verArch?arch:viv).filter(function(c){return!S.buscar||(c.nombre+" "+(c.nombreWA||"")+" "+(c.direccion||"")+" "+(c.telefono||"")+" "+(c.zona||"")).toLowerCase().indexOf(S.buscar)>=0});
+  l.sort(function(a,b){var x=prioridad(a),y=prioridad(b);return x<y?-1:x>y?1:0});
+  var s='<div class="fila" style="flex-wrap:nowrap;margin-bottom:8px"><input id="buscar" class="buscar" style="margin:0" placeholder="Buscar cliente" aria-label="Buscar" value="'+esc(S.buscar)+'"><button class="b" data-nuevo style="flex:none">+ Nuevo</button></div>';
+  if(verArch)s+='<button class="volver" data-filtro="">‹ Volver a los clientes</button><div class="gris" style="margin-bottom:8px">Archivados: '+arch.length+'. Lo que archivás en WhatsApp aparece acá solo, y si lo desarchivás vuelve a la lista. Si un archivado te escribe, vuelve solo.</div>';
+  else if(!S.buscar)s+=pAsistente();
+  if(!l.length)return s+'<div class="card vacio">'+(S.buscar?"No encontré a nadie con eso.":verArch?"No hay archivados.":"No hay clientes en marcha.")+'</div>'+(!verArch&&arch.length?'<button class="b ancho" data-filtro="_arch" style="margin-top:12px">Ver archivados ('+arch.length+')</button>':"");
+  var n=Math.min(l.length,S.mostrar||20);
+  s+='<div class="lista-cli" id="listaCli" data-n="'+Math.min(l.length,10)+'">'+l.slice(0,n).map(filaCli).join("")+'</div>';
+  if(n<l.length)s+='<div id="masCli" class="gris" style="text-align:center;padding:16px">Cargando más clientes…</div>';
+  else if(!verArch&&arch.length)s+='<button class="b ancho" data-filtro="_arch" style="margin-top:12px">Ver archivados ('+arch.length+')</button>';
+  return s}
+function ajustarFilas(){var L=$("listaCli");if(!L)return;var n=Number(L.dataset.n)||1,nav=($("nav")||{}).offsetHeight||64,top=L.getBoundingClientRect().top+scrollY;
+  var h=Math.floor((innerHeight-top-nav-14)/n)-4;h=Math.max(56,Math.min(h,150));L.style.setProperty("--fh",h+"px");L.classList.toggle("grande",h>=78);L.classList.toggle("muy",h>=112)}
+window.addEventListener("resize",function(){ajustarFilas()});
+
+function pSituacion(c){var si=situacion(c);
+  return'<div class="situ"><div class="situ-t">Cómo está</div>'+si.lineas.map(function(x){return'<div>• '+esc(x)+'</div>'}).join("")+
+   (si.hacer?'<div class="situ-h">→ Ahora: <b>'+esc(si.hacer)+'</b></div>':"")+
+   (si.pas.length?'<div class="fila"><button class="b p" data-asis="hizo" data-cid="'+esc(c.id)+'" data-aid="'+esc(si.pas[0].id)+'">Sí, se hizo</button><button class="b" data-asis="reprog" data-cid="'+esc(c.id)+'" data-aid="'+esc(si.pas[0].id)+'">No, pasarlo a otro día</button></div>':"")+'</div>'}
+
+/* ---------- Mi día: lo agendado en orden, con los huecos libres y a quién meter ---------- */
+function candidatos(lib,usados){usados=usados||{};var r=vivos().filter(function(c){var e=est(c.estado);return!usados[c.id]&&CERRADOS.indexOf(e)<0&&e!="llamar"&&!proxEvento(c.id)&&!pasados(c.id).length&&(DUR_E[e]||60)<=lib});
+  r.sort(function(a,b){return ORDEN[est(a.estado)]-ORDEN[est(b.estado)]});
+  if(r.length<2)r=r.concat(vivos().filter(function(c){return!usados[c.id]&&est(c.estado)=="llamar"&&!proxEvento(c.id)&&!pasados(c.id).length}).slice(0,2-r.length));r=r.slice(0,3);r.forEach(function(c){usados[c.id]=1});return r}
+function pCalendario(){var h=iso();if(!S.dia||S.dia<h)S.dia=h;var f=S.dia,dias=[];
+  for(var i=0;i<9&&dias.length<7;i++){var d=new Date(Date.now()+i*864e5);if(d.getDay()==0)continue;dias.push({f:iso(d),t:i==0?"Hoy":i==1?"Mañana":mayus(DIAS[d.getDay()]).slice(0,3)+" "+d.getDate()})}
+  var s='<div class="pila" style="max-width:720px;margin:0 auto"><div class="chips">'+dias.map(function(d){var n=ocupado(d.f).length;return'<button data-dia="'+d.f+'" aria-pressed="'+(d.f==f)+'">'+d.t+(n?' <small style="opacity:.7">·'+n+'</small>':"")+'</button>'}).join("")+'</div>';
+  if(f==h){var atr=[];vivos().forEach(function(c){pasados(c.id).forEach(function(a){atr.push({a:a,c:c})})});
+    if(atr.length)s+='<h2>Sin confirmar</h2><div class="card">'+atr.map(function(x){return'<div class="ev est '+est(x.c.estado)+'" style="border-bottom:1px solid var(--linea);padding:6px 0;flex-wrap:wrap"><span class="h tarde">'+esc(mayus(cuandoPaso(x.a.fecha,x.a.hora)))+'</span><span style="flex:1;min-width:140px"><b>'+esc(x.c.nombre)+'</b> · '+esc(x.a.que)+'<br><span class="gris">¿Se hizo?</span></span><span class="fila"><button class="b p" data-asis="hizo" data-cid="'+esc(x.c.id)+'" data-aid="'+esc(x.a.id)+'">Sí</button><button class="b" data-asis="reprog" data-cid="'+esc(x.c.id)+'" data-aid="'+esc(x.a.id)+'">No, pasarlo</button></span></div>'}).join("")+'</div>'}
+  var bl=[],sh=[];agendaDe().forEach(function(a){if(a.estado=="hecho"||!S.clientes[a.clienteId])return;var dd=Number(a.dias)||1;
+    if(dd>1){if(f>=a.fecha&&f<=sumaDias(a.fecha,dd-1))bl.push({i:J_INI,f:J_FIN,a:a,todo:true});return}
+    if(a.fecha!=f)return;if(!a.hora)sh.push(a);else{var i=aMin(a.hora);bl.push({i:i,f:i+(Number(a.duracion)||60),a:a})}});
+  bl.sort(function(x,y){return x.i-y.i});
+  s+='<h2>'+esc(mayus(cuando(f)))+'</h2><div class="card dia">';
+  function bloque(b){var c=cli(b.a.clienteId);return'<div class="ev est '+est(c.estado)+' blq" data-ir="'+esc(b.a.clienteId)+'"><span class="h">'+(b.todo?"Todo el día":hLinda(b.i)+"–"+hLinda(b.f))+'</span><span style="flex:1;min-width:0"><b>'+esc(c.nombre)+'</b> · '+esc(b.a.que)+'<br><span class="gris">'+esc([NOMBRE_E[est(c.estado)],c.direccion].filter(Boolean).join(" · "))+'</span></span></div>'}
+  var usados={};function hueco(a,b){var cs=candidatos(b-a,usados);return'<div class="hueco"><div><b>Libre '+hLinda(a)+' a '+hLinda(b)+' h</b> <span class="gris">('+textoDur({duracion:b-a})+')</span></div>'+(cs.length?'<div class="gris">Podés meter:</div><div class="fila">'+cs.map(function(c){var e=est(c.estado);return'<button class="b est '+e+'" style="border-left:5px solid var(--c)" data-meter="'+esc(c.id)+'" data-f="'+f+'" data-h="'+aHora(a)+'">'+esc(c.nombre)+' · '+NOMBRE_E[e]+'</button>'}).join("")+'</div>':"")+'</div>'}
+  var t=J_INI;if(f==h)t=Math.max(J_INI,Math.ceil((ahoraMin()+10)/30)*30);var out="";
+  bl.forEach(function(b){if(b.i-t>=30&&!b.todo)out+=hueco(t,b.i);out+=bloque(b);t=Math.max(t,b.f)});
+  if(J_FIN-t>=30)out+=hueco(t,J_FIN);
+  s+=(sh.length?sh.map(function(a){var c=cli(a.clienteId);return'<div class="ev est '+est(c.estado)+' blq" data-ir="'+esc(a.clienteId)+'"><span class="h">Sin hora</span><span><b>'+esc(c.nombre)+'</b> · '+esc(a.que)+'</span></div>'}).join(""):"")+(out||'<div class="gris">El día ya terminó.</div>')+'</div>';
+  if(f==h)s+='<button class="b ancho" data-oir-dia>'+IC.oir.replace("<svg",'<svg width="20" height="20"')+' Escuchar lo de hoy</button>';
+  s+='<h2>Avisos en este celular</h2><div class="card" id="zonaAvisos"><div class="gris">Revisando…</div></div><div class="fila"><a class="b" target="_blank" rel="noopener" href="https://calendar.google.com/calendar/r">Abrir Google Calendar</a><button class="b" data-quien>Entrar como otra persona ('+esc(TR.quien()||"?")+')</button></div></div>';setTimeout(pintarAvisos,0);return s}
 
 /* ---------- hojas (cada acción) ---------- */
 function abrirHoja(html,viva){$("hoja").innerHTML=html;$("hoja").hidden=false;$("velo").hidden=false;S._hojaViva=viva||null;ligarHoja()}
@@ -376,8 +489,8 @@ function huecos(f,dur){var oc=ocupado(f).filter(function(o){return!o.sinHora}),d
   if(f==iso()){var n=new Date(),m=n.getHours()*60+n.getMinutes();desde=Math.max(J_INI,Math.ceil((m+10)/30)*30)}
   for(var s=desde;s+dur<=J_FIN;s+=30){var choca=oc.some(function(o){return s<o.f&&s+dur>o.i});if(!choca)res.push(s)}
   return res}
-function hojaSigue(cid){var c=cli(cid),e=est(c.estado),pe=proxEvento(cid);
-  var st={paso:pe?SIG_E[e]:(CERRADOS.indexOf(e)>=0?"llamar":e),dur:null,dias:0,fecha:iso(),hora:"",avisos:[60],que:null};
+function hojaSigue(cid,pre){pre=pre||{};var c=cli(cid),e=est(c.estado),pe=proxEvento(cid);
+  var st={paso:pre.paso||(pe?SIG_E[e]:(CERRADOS.indexOf(e)>=0?"llamar":e)),dur:null,dias:0,fecha:pre.fecha||iso(),hora:pre.hora||"",avisos:[60],que:pre.que||null};
   function ponDur(){var m=DUR_E[st.paso];st.dias=st.paso=="ejecutar"?0:0;st.dur=m||60}
   ponDur();
   var dias=[];for(var i=0;i<10;i++){var d=new Date(Date.now()+i*864e5);if(d.getDay()==0)continue;dias.push({f:iso(d),t:i==0?"Hoy":i==1?"Mañana":mayus(DIAS[d.getDay()]).slice(0,3)+" "+d.getDate()})}
@@ -421,7 +534,7 @@ function hojaSigue(cid){var c=cli(cid),e=est(c.estado),pe=proxEvento(cid);
   function guardaQue(){var q=$("sgQue");if(q&&q.value!=QUE_E[st.paso])st.que=q.value}
   async function soloEstado(x){var t=trabajoActivo(cid);
     try{await db.doc("clientes/"+cid).update({estado:x,ts:Date.now()});if(t)await db.doc("trabajos/"+t.id).update({estado:x,ts:Date.now(),hecho:x=="terminado"});await nota(cid,"Estado → "+NOMBRE_E[x]);aviso(c.nombre+": "+NOMBRE_E[x]);cerrarHoja()}catch(err){aviso("No se pudo guardar")}}
-  S._horaMano=false;abrirHoja("",viva);viva()}
+  S._horaMano=!!pre.hora;abrirHoja("",viva);viva()}
 
 var TXT_SEGUIR="¡Hola! ¿Cómo andás? Te escribo de Techos Rey por lo que habíamos hablado. ¿Lo seguimos?";
 function hojaQuietos(){function html(){var l=lista(S.clientes).filter(quieto).sort(function(a,b){return quieto(b)-quieto(a)});
@@ -543,10 +656,16 @@ function ligar(){
   document.querySelectorAll("[data-abrir]").forEach(function(e){e.onclick=function(){S.abierto=e.dataset.abrir;S._foco=false;pintar();scrollTo(0,0)};e.onkeydown=function(ev){if(ev.key=="Enter"&&ev.target===e)e.onclick()}});
   document.querySelectorAll("[data-ir]").forEach(function(e){e.onclick=function(){S.tab="clientes";S.abierto=e.dataset.ir;pintar();scrollTo(0,0)}});
   document.querySelectorAll("[data-volver]").forEach(function(e){e.onclick=function(){S.abierto=null;pintar()}});
-  var bu=$("buscar");if(bu)bu.oninput=function(){S.buscar=bu.value.toLowerCase();S._foco=true;pintar()};
+  var bu=$("buscar");if(bu)bu.oninput=function(){S.buscar=bu.value.toLowerCase();S.mostrar=20;S._foco=true;pintar()};
   document.querySelectorAll("[data-filtro]").forEach(function(b){b.onclick=function(){S.filtro=b.dataset.filtro;S._foco=false;pintar()}});
   document.querySelectorAll("[data-quietos]").forEach(function(b){b.onclick=hojaQuietos});
-  document.querySelectorAll("[data-archivar]").forEach(function(b){b.onclick=function(){archivar(S.abierto,b.dataset.archivar=="si")}});
+  document.querySelectorAll("[data-archivar]").forEach(function(b){b.onclick=function(){if(b.dataset.archivar=="si")archivarWA(S.abierto);else archivar(S.abierto,false)}});
+  document.querySelectorAll("[data-asis]").forEach(function(b){b.addEventListener("click",function(ev){ev.stopPropagation();responder(b.dataset.asis,b.dataset.cid,b.dataset.aid)})});
+  document.querySelectorAll("[data-saltar]").forEach(function(b){b.onclick=function(){S.saltados[b.dataset.saltar]=1;pintar()}});
+  document.querySelectorAll("[data-dia]").forEach(function(b){b.onclick=function(){S.dia=b.dataset.dia;pintar()}});
+  document.querySelectorAll("[data-meter]").forEach(function(b){b.onclick=function(){hojaSigue(b.dataset.meter,{fecha:b.dataset.f,hora:b.dataset.h})}});
+  var mc=$("masCli");if(mc&&window.IntersectionObserver){var ob=new IntersectionObserver(function(en){if(en[0].isIntersecting){ob.disconnect();S.mostrar=(S.mostrar||20)+20;pintar()}});ob.observe(mc)}
+  setTimeout(ajustarFilas,0);
   document.querySelectorAll("[data-nuevo]").forEach(function(b){b.onclick=function(){hojaDatos(null)}});
   document.querySelectorAll("[data-cambiar]").forEach(function(b){b.onclick=function(ev){ev.stopPropagation();hojaSigue(b.dataset.cambiar)}});
   document.querySelectorAll("[data-agendar]").forEach(function(b){b.onclick=function(ev){ev.stopPropagation();hojaAgendar(b.dataset.agendar)}});
