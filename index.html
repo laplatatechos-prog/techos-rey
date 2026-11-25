@@ -7,7 +7,7 @@
 <meta name="color-scheme" content="light">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>Techos Rey · Clientes</title>
-<script>window.TR_VER="1795613111"</script>
+<script>window.TR_VER="1795613747"</script>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icono-192.png">
 <link rel="apple-touch-icon" href="icono-192.png">
@@ -426,7 +426,7 @@ function filaCli(c){var e=est(c.estado),q=queQuedo(c),h=iso(),pas=pasados(c.id).
 function pPlanilla(){var todo=lista(S.clientes).filter(function(c){return!c.noCliente}),arch=todo.filter(archivado),viv=todo.filter(function(c){return!archivado(c)}),verArch=S.filtro=="_arch";
   var l=(verArch?arch:viv).filter(function(c){return!S.buscar||(c.nombre+" "+(c.nombreWA||"")+" "+(c.direccion||"")+" "+(c.telefono||"")+" "+(c.zona||"")).toLowerCase().indexOf(S.buscar)>=0});
   l.sort(function(a,b){var x=prioridad(a),y=prioridad(b);return x<y?-1:x>y?1:0});
-  var s='<div class="fila" style="flex-wrap:nowrap;margin-bottom:8px"><input id="buscar" class="buscar" style="margin:0" placeholder="Buscar cliente" aria-label="Buscar" value="'+esc(S.buscar)+'"></div>';
+  var s='';
   if(verArch)s+='<button class="volver" data-filtro="">‹ Volver a los clientes</button><div class="gris" style="margin-bottom:8px">Archivados: '+arch.length+'. Lo que archivás en WhatsApp aparece acá solo, y si lo desarchivás vuelve a la lista. Si un archivado te escribe, vuelve solo.</div>';
   else if(!S.buscar)s+=pAsistente();
   if(!l.length)return s+'<div class="card vacio">'+(S.buscar?"No encontré a nadie con eso.":verArch?"No hay archivados.":"No hay clientes en marcha.")+'</div>'+(!verArch&&arch.length?'<button class="b ancho" data-filtro="_arch" style="margin-top:12px">Ver archivados ('+arch.length+')</button>':"");
