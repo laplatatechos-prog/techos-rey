@@ -86,3 +86,9 @@ if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(
 
 window.claude={use:function(n){return Promise.resolve(n=="db"?db:n=="dictation"?dictado:n=="user"?user:null)}};
 })();
+
+/* Si hay una versión nueva de la app en el servidor, se recarga sola (al abrirla y al volver a ella). */
+(function(){var mirando=false;function revisar(){if(mirando||!window.TR_VER)return;mirando=true;
+  fetch(location.pathname+"?v="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(h){var m=h.match(/TR_VER="(\d+)"/);
+    if(m&&m[1]!=window.TR_VER&&!document.querySelector("#hoja:not([hidden])"))location.reload()}).catch(function(){}).then(function(){mirando=false})}
+  setTimeout(revisar,1500);document.addEventListener("visibilitychange",function(){if(!document.hidden)revisar()});setInterval(revisar,5*60*1000)})();
