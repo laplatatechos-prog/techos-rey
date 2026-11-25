@@ -20,7 +20,7 @@
   --azul:#16264a; --azul-t:#ffffff; --oro:#c4951a; --oro-t:#1d1503; --wa:#1fa855;
   --e-llamar:#2563c9; --e-llamar-f:#e4edfb; --e-visita:#7a45d6; --e-visita-f:#efe8fc;
   --e-presupuestar:#b86e00; --e-presupuestar-f:#fdf0d6; --e-ejecutar:#0b8a7e; --e-ejecutar-f:#dbf2ef;
-  --e-cobrar:#1f8a3c; --e-cobrar-f:#e0f4e5; --e-terminado:#6b7280; --e-terminado-f:#eceef1;
+  --e-cobrar:#1f8a3c; --e-cobrar-f:#e0f4e5; --e-terminado:#475569; --e-terminado-f:#e8ecf1; --e-nova:#8d6e63; --e-nova-f:#f3ebe7;
   --e-reclamo:#d0312d; --e-reclamo-f:#fbe4e3;
   --display:"Archivo",system-ui,sans-serif; --texto:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
   --sombra:0 1px 2px rgba(20,28,51,.06),0 2px 10px rgba(20,28,51,.05);
@@ -50,7 +50,7 @@ h2{font:700 13.5px var(--display);text-transform:uppercase;letter-spacing:.8px;c
 .est{--c:var(--e-terminado);--f:var(--e-terminado-f)}
 .est.llamar{--c:var(--e-llamar);--f:var(--e-llamar-f)} .est.visita{--c:var(--e-visita);--f:var(--e-visita-f)}
 .est.presupuestar{--c:var(--e-presupuestar);--f:var(--e-presupuestar-f)} .est.ejecutar{--c:var(--e-ejecutar);--f:var(--e-ejecutar-f)}
-.est.cobrar{--c:var(--e-cobrar);--f:var(--e-cobrar-f)} .est.reclamo{--c:var(--e-reclamo);--f:var(--e-reclamo-f)}
+.est.cobrar{--c:var(--e-cobrar);--f:var(--e-cobrar-f)} .est.nova{--c:var(--e-nova);--f:var(--e-nova-f)} .est.reclamo{--c:var(--e-reclamo);--f:var(--e-reclamo-f)}
 .pill{display:inline-flex;align-items:center;gap:6px;font:700 13px var(--texto);padding:4px 11px;border-radius:20px;background:var(--f);color:var(--c);white-space:nowrap;border:0;cursor:pointer}
 .pill::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--c)}
 /* Filtros por estado */
@@ -87,6 +87,20 @@ h2{font:700 13.5px var(--display);text-transform:uppercase;letter-spacing:.8px;c
   .fila-t .ib{width:40px;height:40px;border-radius:11px}
   .fila-t .ib svg{width:20px;height:20px}
 }
+/* Grilla de tarjetas */
+.grilla{display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:8px}
+.tarj{background:var(--sup);border:1px solid var(--linea);border-top:5px solid var(--c);border-radius:12px;padding:8px 9px 7px;display:flex;flex-direction:column;gap:3px;min-width:0;cursor:pointer;box-shadow:var(--sombra)}
+.tarj:focus-visible{outline:3px solid var(--oro);outline-offset:2px}
+.t-nom{display:block;font:700 15.5px/1.2 var(--display);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.t-nom.sin{color:var(--suave)}
+.t-est{align-self:flex-start;font:700 11.5px var(--texto);padding:1px 8px;border-radius:12px;border:0;background:var(--f);color:var(--c);cursor:pointer}
+.t-que{font-size:13px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.6em}
+.t-cuando{font-size:12px;color:var(--suave);font-variant-numeric:tabular-nums}
+.t-cuando.tarde{color:var(--e-reclamo);font-weight:600}
+.t-acc{display:flex;gap:5px;margin-top:3px}
+.t-acc .ib{width:auto;flex:1;height:32px;border-radius:9px}
+.t-acc .ib svg{width:17px;height:17px}
+.t-acc .ib.vac{border-style:dashed;opacity:.35}
 /* Ficha */
 .volver{background:none;border:0;color:var(--fg);font:600 16px var(--texto);padding:4px 0;cursor:pointer}
 .cabeza h1{font:800 27px/1.15 var(--display);margin:0;text-wrap:balance}
@@ -172,11 +186,12 @@ input:focus-visible,textarea:focus-visible{outline:3px solid var(--oro);outline-
 <script>
 (function(){
 var CAL="family14446676083126153301@group.calendar.google.com";
-var ESTADOS=["llamar","visita","presupuestar","ejecutar","cobrar","reclamo","terminado"];
-var NOMBRE_E={llamar:"Llamar",visita:"Visita",presupuestar:"Presupuestar",ejecutar:"Ejecutar",cobrar:"Cobrar",terminado:"Terminado",reclamo:"Reclamo"};
-var QUE_E={llamar:"Llamarlo o escribirle",visita:"Ir a ver el trabajo",presupuestar:"Pasarle el presupuesto",ejecutar:"Hacer el trabajo",cobrar:"Cobrar",terminado:"Nada, está terminado",reclamo:"Resolver el reclamo"};
-var ORDEN={reclamo:0,llamar:1,visita:2,presupuestar:3,ejecutar:4,cobrar:5,terminado:6};
-var VIEJOS={"nuevo":"llamar","a contactar":"llamar","a visitar":"visita","presupuestado":"presupuestar","en ejecución":"ejecutar","en ejecucion":"ejecutar","cobrado":"terminado","perdido":"terminado"};
+var ESTADOS=["llamar","visita","presupuestar","ejecutar","cobrar","reclamo","terminado","nova"];
+var CERRADOS=["terminado","nova"];
+var NOMBRE_E={llamar:"Llamar",visita:"Visita",presupuestar:"Presupuestar",ejecutar:"Ejecutar",cobrar:"Cobrar",terminado:"Terminado",reclamo:"Reclamo",nova:"No va"};
+var QUE_E={llamar:"Llamarlo o escribirle",visita:"Ir a ver el trabajo",presupuestar:"Pasarle el presupuesto",ejecutar:"Hacer el trabajo",cobrar:"Cobrar",terminado:"Nada, está terminado",reclamo:"Resolver el reclamo",nova:"Nada, no sigue"};
+var ORDEN={reclamo:0,llamar:1,visita:2,presupuestar:3,ejecutar:4,cobrar:5,terminado:6,nova:7};
+var VIEJOS={"nuevo":"llamar","a contactar":"llamar","a visitar":"visita","presupuestado":"presupuestar","en ejecución":"ejecutar","en ejecucion":"ejecutar","cobrado":"terminado","perdido":"nova","no va":"nova"};
 function est(e){e=String(e||"").toLowerCase();return ESTADOS.indexOf(e)>=0?e:(VIEJOS[e]||"llamar")}
 var S={clientes:{},trabajos:{},historia:{},avisos:{},mensajes:{},chats:{},agenda:{},tab:"clientes",abierto:null,filtro:"",buscar:"",yo:"",cal:null};
 var db=null,tts=null,dict=null,mcp=null;
@@ -221,7 +236,7 @@ async function iniciar(){pintar();
   if(!db){$("sub").textContent="Sin conexión";$("app").innerHTML='<div class="card vacio">No hay conexión con la base. Revisá internet y volvé a abrir.</div>';return}
   var timer=setTimeout(function(){$("sub").textContent="La base tarda en responder…"},10000);
   ["clientes","trabajos","historia","avisos","mensajes","chats","agenda","pedidos"].forEach(function(col){
-    db.collection(col).onSnapshot(function(snap){clearTimeout(timer);var o={};snap.docs.forEach(function(d){o[d.id]=d.data()});S[col]=o;sub();if(!$("hoja").hidden&&S._hojaViva)S._hojaViva();else pintar()},
+    db.collection(col).onSnapshot(function(snap){clearTimeout(timer);var o={};snap.docs.forEach(function(d){o[d.id]=d.data()});if(col=="clientes")Object.keys(o).forEach(function(k){var c=o[k];c._sinNombre=!c.nombre;if(!c.nombre)c.nombre=c.nombreWA||telLindo(c.telefono)||"Sin nombre"});S[col]=o;sub();if(!$("hoja").hidden&&S._hojaViva)S._hojaViva();else pintar()},
       function(e){clearTimeout(timer);$("sub").textContent="No pude leer la base ("+e.code+")"})});
   claude.use("tts").then(function(x){tts=x});
   claude.use("dictation").then(function(x){dict=x});
@@ -237,21 +252,21 @@ function pintar(){document.querySelectorAll("#nav button").forEach(function(b){b
   $("app").innerHTML=S.tab=="clientes"?(S.abierto&&S.clientes[S.abierto]?pFicha():pPlanilla()):S.tab=="hoy"?pCalendario():pNovedades();ligar();
   var bu=$("buscar");if(bu&&S._foco){bu.focus();bu.setSelectionRange(bu.value.length,bu.value.length)}}
 
-function pPlanilla(){var todos=lista(S.clientes),cuenta={};todos.forEach(function(c){var e=est(c.estado);cuenta[e]=(cuenta[e]||0)+1});
+function pPlanilla(){var todos=lista(S.clientes),cuenta={},abiertos=0;todos.forEach(function(c){var e=est(c.estado);cuenta[e]=(cuenta[e]||0)+1;if(CERRADOS.indexOf(e)<0)abiertos++});
   var orden=ESTADOS.slice().sort(function(a,b){return ORDEN[a]-ORDEN[b]});
-  var l=todos.filter(function(c){return(!S.filtro||est(c.estado)==S.filtro)&&(!S.buscar||(c.nombre+" "+(c.direccion||"")+" "+(c.telefono||"")+" "+(c.zona||"")).toLowerCase().indexOf(S.buscar)>=0)});
+  var l=todos.filter(function(c){var e=est(c.estado);return(S.filtro?e==S.filtro:CERRADOS.indexOf(e)<0)&&(!S.buscar||(c.nombre+" "+(c.nombreWA||"")+" "+(c.direccion||"")+" "+(c.telefono||"")+" "+(c.zona||"")).toLowerCase().indexOf(S.buscar)>=0)});
   l.sort(function(a,b){var d=ORDEN[est(a.estado)]-ORDEN[est(b.estado)];if(d)return d;var qa=queQuedo(a),qb=queQuedo(b);return(qa.f||"9")<(qb.f||"9")?-1:1});
-  var s='<input id="buscar" class="buscar" placeholder="Buscar cliente por nombre, calle o teléfono" aria-label="Buscar" value="'+esc(S.buscar)+'">';
-  s+='<div class="filtros"><button data-filtro="" aria-pressed="'+(!S.filtro)+'">Todos <span class="n">'+todos.length+'</span></button>'+orden.filter(function(e){return cuenta[e]}).map(function(e){return'<button class="est '+e+'" data-filtro="'+e+'" aria-pressed="'+(S.filtro==e)+'">'+NOMBRE_E[e]+' <span class="n">'+cuenta[e]+'</span></button>'}).join("")+'<button data-nuevo style="border-style:dashed">+ Cliente nuevo</button></div>';
-  if(!l.length)return s+'<div class="card vacio">'+(todos.length?"No hay clientes con ese filtro.":"Todavía no hay clientes. Tocá “+ Cliente nuevo”.")+'</div>';
+  var s='<input id="buscar" class="buscar" placeholder="Buscar por nombre, calle o teléfono" aria-label="Buscar" value="'+esc(S.buscar)+'">';
+  s+='<div class="filtros"><button data-filtro="" aria-pressed="'+(!S.filtro)+'">En marcha <span class="n">'+abiertos+'</span></button>'+orden.filter(function(e){return cuenta[e]}).map(function(e){return'<button class="est '+e+'" data-filtro="'+e+'" aria-pressed="'+(S.filtro==e)+'">'+NOMBRE_E[e]+' <span class="n">'+cuenta[e]+'</span></button>'}).join("")+'<button data-nuevo style="border-style:dashed">+ Nuevo</button></div>';
+  if(!l.length)return s+'<div class="card vacio">'+(todos.length?"No hay clientes acá.":"Todavía no hay clientes. Tocá “+ Nuevo”.")+'</div>';
   var h=iso();
-  s+='<div class="planilla" role="table"><div class="fila-t cab" role="row"><span></span><span>Cliente</span><span>Estado</span><span>Qué quedó</span><span>Cuándo</span><span>Acciones</span></div>'+
-   l.map(function(c){var e=est(c.estado),q=queQuedo(c);return'<div class="fila-t est '+e+'" role="row" tabindex="0" data-abrir="'+esc(c.id)+'"><span class="banda"></span>'+
-    '<span class="c-n"><span class="nom">'+esc(c.nombre)+'</span></span>'+
-    '<span class="c-e">'+pill(e,'data-cambiar="'+esc(c.id)+'"')+'</span>'+
-    '<span class="c-q cel-que">'+esc(q.que)+'</span>'+
-    '<span class="c-c cel-cuando'+(q.f&&q.f<h?" tarde":"")+'">'+esc(q.f?cuando(q.f,q.h):"Sin día")+'</span>'+
-    '<span class="c-a acc">'+(c.telefono?'<a class="ib wa" href="'+esc(waLink(c.telefono))+'" target="_blank" rel="noopener" title="WhatsApp" aria-label="WhatsApp de '+esc(c.nombre)+'" data-stop>'+IC.wa+'</a>':"")+'<button class="ib" title="Agendar" aria-label="Agendar para '+esc(c.nombre)+'" data-agendar="'+esc(c.id)+'">'+IC.cal+'</button><button class="ib" title="Escuchar" aria-label="Escuchar a '+esc(c.nombre)+'" data-oir="'+esc(c.id)+'">'+IC.oir+'</button></span></div>'}).join("")+'</div>';
+  s+='<div class="grilla">'+l.map(function(c){var e=est(c.estado),q=queQuedo(c);
+    return'<div class="tarj est '+e+'" tabindex="0" data-abrir="'+esc(c.id)+'">'+
+     '<div class="t-cab"><span class="t-nom'+(c._sinNombre?' sin':'')+'">'+esc(c.nombre)+'</span></div>'+
+     '<button class="t-est" data-cambiar="'+esc(c.id)+'">'+NOMBRE_E[e]+'</button>'+
+     '<div class="t-que">'+esc(q.que)+'</div>'+
+     '<div class="t-cuando'+(q.f&&q.f<h&&CERRADOS.indexOf(e)<0?" tarde":"")+'">'+esc(q.f?cuando(q.f,q.h):"Sin día")+'</div>'+
+     '<div class="t-acc">'+(c.telefono?'<a class="ib wa" href="'+esc(waLink(c.telefono))+'" target="_blank" rel="noopener" aria-label="WhatsApp de '+esc(c.nombre)+'" data-stop>'+IC.wa+'</a>':'<span class="ib vac"></span>')+'<button class="ib" aria-label="Agendar para '+esc(c.nombre)+'" data-agendar="'+esc(c.id)+'">'+IC.cal+'</button><button class="ib" aria-label="Escuchar a '+esc(c.nombre)+'" data-oir="'+esc(c.id)+'">'+IC.oir+'</button></div></div>'}).join("")+'</div>';
   return s}
 
 function pFicha(){var c=S.clientes[S.abierto],e=est(c.estado),q=queQuedo(c),ags=agendaDe(S.abierto),ch=chatDe(S.abierto),hs=lista(S.historia).filter(function(n){return n.clienteId==S.abierto}).sort(function(a,b){return(b.ts||0)-(a.ts||0)}),t=trabajoActivo(S.abierto);
@@ -368,9 +383,9 @@ async function alCalendario(id,a,c){if(!mcp)return false;
   try{var r=await mcp.callTool("Google Calendar","create_event",args);var p=r.payload||r.structuredContent||{};if(typeof p=="string"){try{p=JSON.parse(p)}catch(e){p={}}}
     await db.doc("agenda/"+id).update({gcal:p.id||"creado"});S.cal=null;return true}catch(e){return false}}
 
-function hojaDatos(cid){var c=cli(cid),t=trabajoActivo(cid)||{};
+function hojaDatos(cid){var c=cid?cli(cid):{_sinNombre:true,nombre:"Cliente nuevo"},t=trabajoActivo(cid)||{};
   abrirHoja(cabHoja("Datos del cliente",c.nombre)+
-   '<label for="dNom">Nombre</label><input id="dNom" value="'+esc(c.nombre)+'">'+
+   '<label for="dNom">Nombre</label><input id="dNom" value="'+esc(c._sinNombre?"":c.nombre)+'" placeholder="'+esc(c.nombreWA?"En WhatsApp figura: "+c.nombreWA:"Todavía sin nombre")+'">'+
    '<label for="dTel">Teléfono (WhatsApp)</label><input id="dTel" inputmode="tel" value="'+esc(c.telefono?telLindo(c.telefono):"")+'" placeholder="221 555-1234">'+
    '<label for="dDir">Dirección</label><input id="dDir" value="'+esc(c.direccion||"")+'" placeholder="Calle y número, entre calles">'+
    '<label for="dZona">Zona</label><input id="dZona" value="'+esc(c.zona||"La Plata")+'">'+
@@ -380,8 +395,8 @@ function hojaDatos(cid){var c=cli(cid),t=trabajoActivo(cid)||{};
    '<label for="dNotas">Notas</label><div class="dictar"><textarea id="dNotas">'+esc(c.notas||"")+'</textarea>'+micBtn("dNotas")+'</div>'+
    '<label for="dFalta">Falta saber</label><input id="dFalta" value="'+esc(c.falta||"")+'">'+
    '<button class="b p ancho" id="dGuardar" style="padding:15px;font-size:17px">Guardar</button>');
-  $("dGuardar").onclick=async function(){var nom=$("dNom").value.trim();if(!nom)return aviso("Falta el nombre");var tel=soloNum($("dTel").value);if(tel.length==10)tel="549"+tel;
-    var d={nombre:nom,telefono:tel?"+"+tel:"",direccion:$("dDir").value.trim(),zona:$("dZona").value.trim(),notas:$("dNotas").value.trim(),falta:$("dFalta").value.trim(),ts:Date.now()};
+  $("dGuardar").onclick=async function(){var nom=$("dNom").value.trim();if(!nom&&!cid&&!soloNum($("dTel").value))return aviso("Poné un nombre o un teléfono");var tel=soloNum($("dTel").value);if(tel.length==10)tel="549"+tel;
+    var d={nombre:nom||"",telefono:tel?"+"+tel:"",direccion:$("dDir").value.trim(),zona:$("dZona").value.trim(),notas:$("dNotas").value.trim(),falta:$("dFalta").value.trim(),ts:Date.now()};
     var td={descripcion:$("dTrab").value.trim(),proxima:$("dQue").value.trim(),ts:Date.now()},mo=Number(soloNum($("dMonto").value));if(mo)td.monto=mo;
     try{if(cid){await db.doc("clientes/"+cid).update(d);if(t.id)await db.doc("trabajos/"+t.id).update(td);else await db.collection("trabajos").add(Object.assign({clienteId:cid,estado:est(c.estado)},td))}
       else{d.estado="llamar";d.origen="a mano";var r=await db.collection("clientes").add(d);await db.collection("trabajos").add(Object.assign({clienteId:r.id,estado:"llamar"},td));S.abierto=r.id}
