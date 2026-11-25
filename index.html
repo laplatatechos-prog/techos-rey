@@ -99,6 +99,9 @@ h2{font:700 13.5px var(--display);text-transform:uppercase;letter-spacing:.8px;c
 .f-l2{font-size:12.5px;line-height:1.3;color:var(--suave);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .f-cuando{color:var(--fg);font-weight:600;font-variant-numeric:tabular-nums}
 .f-cuando.tarde{color:var(--e-reclamo)}
+.f-cuando.quieto{color:var(--e-presupuestar)}
+.aviso-quietos{display:flex;align-items:center;gap:8px;width:100%;text-align:left;font:600 14.5px var(--texto);padding:10px 12px;margin-bottom:10px;border-radius:12px;border:1.5px solid var(--e-presupuestar);background:var(--e-presupuestar-f);color:var(--fg);cursor:pointer}
+.aviso-quietos b{margin-left:auto;color:var(--e-presupuestar);white-space:nowrap}
 .f-acc{display:flex;gap:4px;flex:none}
 .f-acc .ib{width:34px;height:34px;border-radius:9px}
 .f-acc .ib svg{width:17px;height:17px}
@@ -242,6 +245,11 @@ function trabajoActivo(cid){var ts=trabajosDe(cid).filter(function(t){return!t.h
 function agendaDe(cid){return lista(S.agenda).filter(function(a){return(!cid||a.clienteId==cid)&&a.estado!="borrado"}).sort(function(a,b){return(a.fecha+(a.hora||""))<(b.fecha+(b.hora||""))?-1:1})}
 function proxEvento(cid){var h=iso();return agendaDe(cid).filter(function(a){return a.fecha>=h&&a.estado!="hecho"})[0]||null}
 function queQuedo(c){var t=trabajoActivo(c.id),ev=proxEvento(c.id);return{que:(ev&&ev.que)||(t&&t.proxima)||QUE_E[est(c.estado)],f:(ev&&ev.fecha)||(t&&t.fecha)||"",h:(ev&&ev.hora)||(t&&t.hora)||""}}
+var DIAS_QUIETO=5;
+function ultimaVez(c){var m=Math.max(Number(c.ts)||0,Number(c.ultimoMsg)||0);agendaDe(c.id).forEach(function(a){m=Math.max(m,Number(a.ts)||0,Number(a.hechoTs)||0)});return m}
+function archivado(c){if(c.archivado)return!(c.ultimoMsg&&c.ultimoMsg>(c.archivadoTs||0));return CERRADOS.indexOf(est(c.estado))>=0&&Date.now()-ultimaVez(c)>7*864e5}
+function quieto(c){if(c.noCliente||archivado(c)||CERRADOS.indexOf(est(c.estado))>=0)return 0;if(c.esperarHasta&&c.esperarHasta>iso())return 0;if(proxEvento(c.id))return 0;var d=Math.floor((Date.now()-ultimaVez(c))/864e5);return d>=DIAS_QUIETO?d:0}
+async function archivar(cid,si){var c=cli(cid);try{await db.doc("clientes/"+cid).update({archivado:si,archivadoTs:Date.now(),ts:Date.now()});await nota(cid,si?"Archivado":"Sacado del archivo");aviso(si?c.nombre+" quedó archivado":c.nombre+" volvió a la lista")}catch(e){aviso("No se pudo guardar")}}
 function chatDe(cid){return lista(S.chats).filter(function(m){return m.clienteId==cid}).sort(function(a,b){return(a.ts||0)-(b.ts||0)})}
 function novedades(){return lista(S.avisos).filter(function(a){return a.estado!="atendido"}).sort(function(a,b){return(b.ts||0)-(a.ts||0)})}
 
@@ -267,18 +275,20 @@ function pintar(){document.querySelectorAll("#nav button").forEach(function(b){b
   $("app").innerHTML=S.tab=="clientes"?(S.abierto&&S.clientes[S.abierto]?pFicha():pPlanilla()):S.tab=="hoy"?pCalendario():pNovedades();ligar();
   var bu=$("buscar");if(bu&&S._foco){bu.focus();bu.setSelectionRange(bu.value.length,bu.value.length)}}
 
-function pPlanilla(){var todos=lista(S.clientes).filter(function(c){return!c.noCliente}),cuenta={},abiertos=0;todos.forEach(function(c){var e=est(c.estado);cuenta[e]=(cuenta[e]||0)+1;if(CERRADOS.indexOf(e)<0)abiertos++});
+function pPlanilla(){var todo=lista(S.clientes).filter(function(c){return!c.noCliente}),arch=todo.filter(archivado),todos=todo.filter(function(c){return!archivado(c)}),cuenta={},abiertos=0,quietos=todos.filter(quieto);todos.forEach(function(c){var e=est(c.estado);cuenta[e]=(cuenta[e]||0)+1;if(CERRADOS.indexOf(e)<0)abiertos++});
   var orden=ESTADOS.slice().sort(function(a,b){return ORDEN[a]-ORDEN[b]});
-  var l=todos.filter(function(c){var e=est(c.estado);return(S.filtro?e==S.filtro:CERRADOS.indexOf(e)<0)&&(!S.buscar||(c.nombre+" "+(c.nombreWA||"")+" "+(c.direccion||"")+" "+(c.telefono||"")+" "+(c.zona||"")).toLowerCase().indexOf(S.buscar)>=0)});
+  var l=(S.filtro=="_arch"?arch:todos).filter(function(c){var e=est(c.estado);return(S.filtro=="_arch"?true:S.filtro?e==S.filtro:CERRADOS.indexOf(e)<0)&&(!S.buscar||(c.nombre+" "+(c.nombreWA||"")+" "+(c.direccion||"")+" "+(c.telefono||"")+" "+(c.zona||"")).toLowerCase().indexOf(S.buscar)>=0)});
   l.sort(function(a,b){var d=ORDEN[est(a.estado)]-ORDEN[est(b.estado)];if(d)return d;var qa=queQuedo(a),qb=queQuedo(b);return(qa.f||"9")<(qb.f||"9")?-1:1});
   var s='<input id="buscar" class="buscar" placeholder="Buscar por nombre, calle o teléfono" aria-label="Buscar" value="'+esc(S.buscar)+'">';
-  s+='<div class="filtros"><button data-filtro="" aria-pressed="'+(!S.filtro)+'">En marcha <span class="n">'+abiertos+'</span></button>'+orden.filter(function(e){return cuenta[e]}).map(function(e){return'<button class="est '+e+'" data-filtro="'+e+'" aria-pressed="'+(S.filtro==e)+'">'+NOMBRE_E[e]+' <span class="n">'+cuenta[e]+'</span></button>'}).join("")+'<button data-nuevo style="border-style:dashed">+ Nuevo</button></div>';
+  s+='<div class="filtros"><button data-filtro="" aria-pressed="'+(!S.filtro)+'">En marcha <span class="n">'+abiertos+'</span></button>'+orden.filter(function(e){return cuenta[e]}).map(function(e){return'<button class="est '+e+'" data-filtro="'+e+'" aria-pressed="'+(S.filtro==e)+'">'+NOMBRE_E[e]+' <span class="n">'+cuenta[e]+'</span></button>'}).join("")+(arch.length?'<button data-filtro="_arch" aria-pressed="'+(S.filtro=="_arch")+'">Archivados <span class="n">'+arch.length+'</span></button>':"")+'<button data-nuevo style="border-style:dashed">+ Nuevo</button></div>';
+  if(quietos.length&&!S.filtro)s+='<button class="aviso-quietos" data-quietos>💤 '+(quietos.length==1?"1 cliente sin novedades":quietos.length+" clientes sin novedades")+' hace más de '+DIAS_QUIETO+' días<b>Revisar ›</b></button>';
+  if(S.filtro=="_arch")s+='<div class="gris" style="margin-bottom:8px">Terminados y “No va” se archivan solos a la semana. Si un archivado vuelve a escribir, vuelve a la lista.</div>';
   if(!l.length)return s+'<div class="card vacio">'+(todos.length?"No hay clientes acá.":"Todavía no hay clientes. Tocá “+ Nuevo”.")+'</div>';
   var h=iso();
-  s+='<div class="lista-cli">'+l.map(function(c){var e=est(c.estado),q=queQuedo(c),tarde=q.f&&q.f<h&&CERRADOS.indexOf(e)<0;
+  s+='<div class="lista-cli">'+l.map(function(c){var e=est(c.estado),q=queQuedo(c),tarde=q.f&&q.f<h&&CERRADOS.indexOf(e)<0,qd=quieto(c);
     return'<div class="fcli est '+e+'" tabindex="0" data-abrir="'+esc(c.id)+'">'+
      '<div class="f-txt"><div class="f-l1"><span class="f-nom'+(c._sinNombre?' sin':'')+'">'+esc(c.nombre)+'</span><button class="f-est" data-cambiar="'+esc(c.id)+'">'+NOMBRE_E[e]+'</button></div>'+
-     '<div class="f-l2"><span class="f-cuando'+(tarde?" tarde":"")+'">'+esc(q.f?cuando(q.f,q.h):"Sin día")+'</span> · '+esc(q.que)+'</div></div>'+
+     '<div class="f-l2"><span class="f-cuando'+(tarde?" tarde":qd?" quieto":"")+'">'+esc(q.f?cuando(q.f,q.h):qd?"💤 "+qd+" días quieto":"Sin día")+'</span> · '+esc(q.que)+'</div></div>'+
      '<div class="f-acc">'+(c.telefono?'<a class="ib wa" href="'+esc(waLink(c.telefono))+'" target="_blank" rel="noopener" aria-label="WhatsApp de '+esc(c.nombre)+'" data-stop>'+IC.wa+'</a>':"")+'<button class="ib" aria-label="Agendar para '+esc(c.nombre)+'" data-agendar="'+esc(c.id)+'">'+IC.cal+'</button></div></div>'}).join("")+'</div>';
   return s}
 
@@ -298,7 +308,7 @@ function pFicha(){var c=S.clientes[S.abierto],e=est(c.estado),q=queQuedo(c),ags=
   if(c.resumenChat||c.sugerencia)s+='<div class="card"><b>Resumen de la conversación</b>'+(c.resumenChat?'<div>'+esc(c.resumenChat)+'</div>':"")+(c.sugerencia&&c.telefono?'<div class="gris">Para mandarle:</div><div style="background:#dcf5e3;border-radius:10px;padding:10px 12px">'+esc(c.sugerencia)+'</div><div class="fila"><button class="b wa" data-escribir="sug">'+IC.wa+'Mandale esto</button></div>':"")+'</div>';
   s+='<div class="card"><div class="fila" style="justify-content:space-between"><b>Calendario de '+esc(c.nombre.split(" ")[0])+'</b><button class="b" data-agendar="'+esc(c.id)+'">+ Agendar</button></div>'+
     (ags.length?ags.map(function(a){return'<div class="ev"><span class="h'+(a.fecha<iso()&&a.estado!="hecho"?" tarde":"")+'">'+esc(cuando(a.fecha,a.hora))+'</span><span style="flex:1;min-width:0">'+esc(a.que)+(a.estado=="hecho"?' <span class="gris">· hecho</span>':"")+'<br><span class="gris">'+esc((rango(a)?rango(a)+" · ":"")+textoAviso(a.avisos))+(a.gcal?" · en Google Calendar":"")+'</span>'+(!a.gcal&&a.estado!="hecho"?'<br><a class="b" style="margin-top:6px;padding:7px 11px;font-size:14px" target="_blank" rel="noopener" data-gcal="'+esc(a.id)+'" href="'+esc(TR.gcalLink(a,c))+'">Pasar a Google Calendar</a>':"")+'</span>'+(a.estado!="hecho"?'<button class="b" data-hecho="'+esc(a.id)+'">Hecho</button>':"")+'</div>'}).join(""):'<div class="gris">Nada agendado. Tocá “+ Agendar”.</div>')+'</div>';
-  s+='<div class="card"><div class="fila" style="justify-content:space-between"><b>Datos</b><button class="b" data-datos>Editar</button></div><dl class="datos"><dt>Teléfono</dt><dd>'+esc(c.telefono?telLindo(c.telefono):"—")+'</dd><dt>Dirección</dt><dd>'+esc(c.direccion||"—")+(c.zona?", "+esc(c.zona):"")+'</dd>'+(t?'<dt>Trabajo</dt><dd>'+esc(t.descripcion||t.tipo||"—")+'</dd>'+(t.monto?'<dt>Precio</dt><dd>$'+Number(t.monto).toLocaleString("es-AR")+'</dd>':""):"")+(c.origen?'<dt>Llegó por</dt><dd>'+esc(c.origen)+'</dd>':"")+(c.notas?'<dt>Notas</dt><dd>'+esc(c.notas)+'</dd>':"")+'</dl>'+
+  s+='<div class="card"><div class="fila" style="justify-content:space-between"><b>Datos</b><span class="fila"><button class="b" data-archivar="'+(archivado(c)?"no":"si")+'">'+(archivado(c)?"Sacar del archivo":"Archivar")+'</button><button class="b" data-datos>Editar</button></span></div><dl class="datos"><dt>Teléfono</dt><dd>'+esc(c.telefono?telLindo(c.telefono):"—")+'</dd><dt>Dirección</dt><dd>'+esc(c.direccion||"—")+(c.zona?", "+esc(c.zona):"")+'</dd>'+(t?'<dt>Trabajo</dt><dd>'+esc(t.descripcion||t.tipo||"—")+'</dd>'+(t.monto?'<dt>Precio</dt><dd>$'+Number(t.monto).toLocaleString("es-AR")+'</dd>':""):"")+(c.origen?'<dt>Llegó por</dt><dd>'+esc(c.origen)+'</dd>':"")+(c.notas?'<dt>Notas</dt><dd>'+esc(c.notas)+'</dd>':"")+'</dl>'+
     (c.direccion?'<div class="fila"><a class="b" target="_blank" rel="noopener" href="https://www.google.com/maps/search/'+encodeURIComponent(c.direccion+", "+(c.zona||"La Plata"))+'">'+IC.mapa+'Cómo llegar</a></div>':"")+'</div>';
   s+='<div class="card"><div class="fila" style="justify-content:space-between"><b>Anotar algo</b></div><div class="dictar"><textarea id="txtNota" placeholder="Escribí o tocá el micrófono y dictá"></textarea>'+micBtn("txtNota")+'</div><div class="fila"><button class="b p" data-anotar>Guardar nota</button></div>'+
     (hs.length?'<details><summary class="gris" style="cursor:pointer;padding:4px 0">Notas anteriores ('+hs.length+')</summary>'+hs.map(function(n){return'<div style="border-left:3px solid var(--linea);padding:2px 0 2px 10px;margin-top:6px">'+esc(n.texto)+'<div class="gris" style="font-size:12.5px">'+(n.ts?new Date(n.ts).toLocaleString("es-AR",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):"")+(n.autor?" · "+esc(n.autor):"")+'</div></div>'}).join("")+'</details>':"")+'</div>';
@@ -412,6 +422,21 @@ function hojaSigue(cid){var c=cli(cid),e=est(c.estado),pe=proxEvento(cid);
     try{await db.doc("clientes/"+cid).update({estado:x,ts:Date.now()});if(t)await db.doc("trabajos/"+t.id).update({estado:x,ts:Date.now(),hecho:x=="terminado"});await nota(cid,"Estado → "+NOMBRE_E[x]);aviso(c.nombre+": "+NOMBRE_E[x]);cerrarHoja()}catch(err){aviso("No se pudo guardar")}}
   S._horaMano=false;abrirHoja("",viva);viva()}
 
+var TXT_SEGUIR="¡Hola! ¿Cómo andás? Te escribo de Techos Rey por lo que habíamos hablado. ¿Lo seguimos?";
+function hojaQuietos(){function html(){var l=lista(S.clientes).filter(quieto).sort(function(a,b){return quieto(b)-quieto(a)});
+    return cabHoja("Clientes sin novedades","Hace más de "+DIAS_QUIETO+" días que no pasa nada")+(l.length?l.map(function(c){var e=est(c.estado),q=queQuedo(c);
+      return'<div class="card est '+e+'" style="box-shadow:none;border-left:5px solid var(--c);padding:10px 12px"><div class="fila" style="justify-content:space-between"><b style="font-size:16.5px">'+esc(c.nombre)+'</b>'+pill(e)+'</div>'+
+       '<div class="gris">💤 '+quieto(c)+' días quieto · '+esc(q.que)+'</div><div class="fila">'+
+       '<button class="b p" data-q-sigue="'+esc(c.id)+'">¿Qué sigue?</button>'+
+       (c.telefono?'<a class="b wa" target="_blank" rel="noopener" data-q-wa="'+esc(c.id)+'" href="'+esc(waLink(c.telefono,TXT_SEGUIR))+'">'+IC.wa+'Escribirle</a>':"")+
+       '<button class="b" data-q-esperar="'+esc(c.id)+'">Esperar 1 semana</button><button class="b" data-q-arch="'+esc(c.id)+'">Archivar</button></div></div>'}).join(""):'<div class="card vacio">Listo, no queda ninguno.</div>')}
+  function viva(){var H=$("hoja");H.innerHTML=html();ligarHoja();
+    H.querySelectorAll("[data-q-sigue]").forEach(function(b){b.onclick=function(){hojaSigue(b.dataset.qSigue)}});
+    H.querySelectorAll("[data-q-wa]").forEach(function(b){b.addEventListener("click",function(){var id=b.dataset.qWa;nota(id,"Se le escribió para retomar");db.doc("clientes/"+id).update({esperarHasta:iso(new Date(Date.now()+3*864e5)),ts:Date.now()})})});
+    H.querySelectorAll("[data-q-esperar]").forEach(function(b){b.onclick=async function(){var id=b.dataset.qEsperar;await db.doc("clientes/"+id).update({esperarHasta:iso(new Date(Date.now()+7*864e5)),ts:Date.now()});await nota(id,"Esperar una semana");aviso("Te lo vuelvo a mostrar en una semana")}});
+    H.querySelectorAll("[data-q-arch]").forEach(function(b){b.onclick=function(){archivar(b.dataset.qArch,true)}})}
+  abrirHoja("",viva);viva()}
+
 function hojaWhatsApp(cid,texto){var c=cli(cid);
   abrirHoja(cabHoja("Mensaje por WhatsApp","Para "+c.nombre+" · "+telLindo(c.telefono))+'<div class="dictar"><textarea id="txtWa" placeholder="Escribí o tocá el micrófono y dictá el mensaje">'+esc(texto||"")+'</textarea>'+micBtn("txtWa")+'</div>'+
     '<a class="b wa ancho" id="waIr" target="_blank" rel="noopener" href="'+esc(waLink(c.telefono,texto))+'">'+IC.wa+'Abrir WhatsApp con el mensaje</a>'+
@@ -519,6 +544,8 @@ function ligar(){
   document.querySelectorAll("[data-volver]").forEach(function(e){e.onclick=function(){S.abierto=null;pintar()}});
   var bu=$("buscar");if(bu)bu.oninput=function(){S.buscar=bu.value.toLowerCase();S._foco=true;pintar()};
   document.querySelectorAll("[data-filtro]").forEach(function(b){b.onclick=function(){S.filtro=b.dataset.filtro;S._foco=false;pintar()}});
+  document.querySelectorAll("[data-quietos]").forEach(function(b){b.onclick=hojaQuietos});
+  document.querySelectorAll("[data-archivar]").forEach(function(b){b.onclick=function(){archivar(S.abierto,b.dataset.archivar=="si")}});
   document.querySelectorAll("[data-nuevo]").forEach(function(b){b.onclick=function(){hojaDatos(null)}});
   document.querySelectorAll("[data-cambiar]").forEach(function(b){b.onclick=function(ev){ev.stopPropagation();hojaSigue(b.dataset.cambiar)}});
   document.querySelectorAll("[data-agendar]").forEach(function(b){b.onclick=function(ev){ev.stopPropagation();hojaAgendar(b.dataset.agendar)}});
