@@ -7,7 +7,7 @@
 <meta name="color-scheme" content="light">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>Techos Rey · Clientes</title>
-<script>window.TR_VER="1795613844"</script>
+<script>window.TR_VER="1795664939"</script>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icono-192.png">
 <link rel="apple-touch-icon" href="icono-192.png">
@@ -133,6 +133,8 @@ h2{font:700 13.5px var(--display);text-transform:uppercase;letter-spacing:.8px;c
 .sem-ya{position:absolute;left:-2px;right:-2px;height:2px;background:var(--e-reclamo);z-index:2;pointer-events:none}
 .sem-b{position:absolute;overflow:hidden;border:0;border-left:3px solid var(--c);border-radius:5px;background:var(--f);color:var(--fg);font:700 11px/1.2 var(--texto);text-align:left;padding:2px 3px;cursor:pointer;overflow-wrap:break-word}
 .sem-n{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sem-b small{display:block;font-weight:500;font-size:10px;opacity:.8}
+.sem-b.sug{background:repeating-linear-gradient(135deg,var(--f),var(--f) 6px,#fff 6px,#fff 12px);border:2px dashed var(--c);border-left-width:2px;color:var(--c)}
+.sem-dia.ancho .sem-b{font-size:12.5px;padding:3px 5px}.sem-dia.ancho .sem-b small{font-size:11.5px}
 .sem-b.falta{outline:2px dashed var(--e-reclamo);outline-offset:-2px}
 .sem-sh{display:flex;flex-wrap:wrap;gap:5px;align-items:center;margin-top:8px}.sem-sh .sem-b{position:static;padding:5px 8px;font-size:12.5px}
 .dia{gap:6px}.blq{cursor:pointer;border-left:5px solid var(--c);padding:7px 10px;border-radius:9px;background:var(--f)}
@@ -455,34 +457,60 @@ function bloquesDia(f){var bl=[],sh=[];agendaDe().forEach(function(a){if(a.estad
     if(a.fecha!=f)return;if(!a.hora)sh.push(a);else{var i=aMin(a.hora);bl.push({i:i,f:i+(Number(a.duracion)||60),a:a})}});
   bl.sort(function(x,y){return x.i-y.i||y.f-x.f});var fin=[];bl.forEach(function(b){var k=0;while(fin[k]>b.i)k++;b.k=k;fin[k]=b.f});
   bl.forEach(function(b){var n=0;bl.forEach(function(o){if(o.i<b.f&&o.f>b.i)n=Math.max(n,o.k+1)});b.n=n});return{bl:bl,sh:sh}}
-function pCalendario(){var h=iso();if(!S.semana)S.semana=lunesDe(h);var L=S.semana,dias=[];for(var i=0;i<6;i++)dias.push(sumaDias(L,i));
-  var alto=(J_FIN-J_INI)/30*RH,ahora=ahoraMin(),fin=sumaDias(L,5);
+function habil(f,n){var r=[],d=f;while(r.length<n){if(new Date(d+"T12:00:00").getDay()!=0)r.push(d);d=sumaDias(d,1)}return r}
+function sugNo(){try{return JSON.parse(localStorage.getItem("tr_sugno")||"{}")}catch(e){return{}}}
+function sugerencias(dias){var h=iso(),no=sugNo(),ahora=ahoraMin(),occ={},out=[];
+  dias.forEach(function(f){occ[f]=bloquesDia(f).bl.map(function(b){return[b.i,b.f]})});
+  var cs=vivos().filter(function(c){var e=est(c.estado);var tx=chatDe(c.id).filter(function(m){return m.de!="yo"}).map(function(m){return m.texto||""}).join(" ").toLowerCase();if(/b[uú]squeda de (trabajo|empleo)|busco (trabajo|empleo)|curr[ií]cul|postul|formulario|cv/.test(tx))return false;
+    return CERRADOS.indexOf(e)<0&&(e!="llamar"||Date.now()-ultimaVez(c)<10*864e5)&&!proxEvento(c.id)&&!pasados(c.id).length&&!(no[c.id]&&no[c.id]>=h)});
+  var PR={reclamo:0,ejecutar:1,presupuestar:2,cobrar:3,visita:4,llamar:5},porDia={};cs.sort(function(a,b){return(PR[est(a.estado)]-PR[est(b.estado)])||(ultimaVez(b)-ultimaVez(a))});
+  cs.slice(0,10).forEach(function(c){if(out.length>=5)return;var e0=est(c.estado),paso=e0=="llamar"?"visita":e0,dur=Math.max(30,DUR_E[paso]||60);
+    for(var k=0;k<dias.length;k++){var f=dias[k];if(f<h||(porDia[f]||0)>=3)continue;var t=8*60;if(f==h)t=Math.max(t,Math.ceil((ahora+60)/30)*30);
+      while(t+dur<=19*60){var lib=!occ[f].some(function(o){return o[0]<t+dur+30&&o[1]+30>t});if(lib){occ[f].push([t,t+dur]);porDia[f]=(porDia[f]||0)+1;out.push({cid:c.id,f:f,i:t,fin:t+dur,paso:paso});return}t+=30}}});
+  return out}
+function pCalendario(){var h=iso(),n3=(S.vista||3)==3,dias;
+  if(n3){if(!S.desde||S.desde<h)S.desde=h;dias=habil(S.desde,3)}else{if(!S.semana)S.semana=lunesDe(h);dias=habil(S.semana,6)}
+  var alto=(J_FIN-J_INI)/30*RH,ahora=ahoraMin(),L=dias[0],fin=dias[dias.length-1];
   var tit=(function(){var a=new Date(L+"T12:00:00"),b=new Date(fin+"T12:00:00");return a.getDate()+(a.getMonth()!=b.getMonth()?" de "+MESES[a.getMonth()]:"")+" al "+b.getDate()+" de "+MESES[b.getMonth()]})();
-  var s='<div class="pila" style="max-width:900px;margin:0 auto"><div class="sem-nav"><button class="b" data-sem="-7" aria-label="Semana anterior">‹</button><div><b>'+(L==lunesDe(h)?"Esta semana":L==sumaDias(lunesDe(h),7)?"La semana que viene":"Semana")+'</b><div class="gris">'+esc(tit)+'</div></div><button class="b" data-sem="7" aria-label="Semana siguiente">›</button></div>';
-  s+='<div class="card sem-card"><div class="sem"><div class="sem-cab"></div>';
-  dias.forEach(function(f){var d=new Date(f+"T12:00:00");s+='<div class="sem-cab'+(f==h?" hoy":"")+'">'+mayus(DIAS[d.getDay()]).slice(0,3)+'<b>'+d.getDate()+'</b></div>'});
+  var nom=n3?(L==h?"Hoy y los 2 que siguen":"3 días"):(L==lunesDe(h)?"Esta semana":L==sumaDias(lunesDe(h),7)?"La semana que viene":"Semana");
+  var s='<div class="pila" style="max-width:900px;margin:0 auto"><div class="chips" style="justify-content:center"><button data-vista="3" aria-pressed="'+n3+'">3 días</button><button data-vista="6" aria-pressed="'+!n3+'">Semana</button></div>'+
+   '<div class="sem-nav"><button class="b" data-sem="-1" aria-label="Anterior">‹</button><div><b>'+nom+'</b><div class="gris">'+esc(tit)+'</div></div><button class="b" data-sem="1" aria-label="Siguiente">›</button></div>';
+  var sug=sugerencias(dias);S._sugs=sug;
+  if(sug.length)s+='<div class="asis" style="margin:0"><div class="asis-cab"><span>Asistente · '+sug.length+' sugerencia'+(sug.length>1?"s":"")+'</span></div><div class="asis-txt">Te propongo dónde meter a los clientes que no tienen día. Están con línea punteada en la grilla: tocalos y decí sí o no.</div></div>';
+  s+='<div class="card sem-card"><div class="sem" style="grid-template-columns:24px repeat('+dias.length+',minmax(0,1fr))"><div class="sem-cab"></div>';
+  dias.forEach(function(f){var d=new Date(f+"T12:00:00");s+='<div class="sem-cab'+(f==h?" hoy":"")+'">'+mayus(DIAS[d.getDay()]).slice(0,n3?9:3)+'<b>'+d.getDate()+'</b></div>'});
   s+='<div class="sem-horas" style="height:'+alto+'px">';for(var m=J_INI;m<J_FIN;m+=60)s+='<span style="top:'+((m-J_INI)/30*RH)+'px">'+(m/60)+'</span>';s+='</div>';
   dias.forEach(function(f){var x=bloquesDia(f),pas=f<h;
-    s+='<div class="sem-dia'+(f==h?" hoy":"")+(pas?" pasado":"")+'" data-celda="'+f+'" style="height:'+alto+'px;--rh:'+RH+'px">';
+    s+='<div class="sem-dia'+(f==h?" hoy":"")+(pas?" pasado":"")+(n3?" ancho":"")+'" data-celda="'+f+'" style="height:'+alto+'px;--rh:'+RH+'px">';
     if(f==h&&ahora>J_INI&&ahora<J_FIN)s+='<div class="sem-ya" style="top:'+((ahora-J_INI)/30*RH)+'px"></div>';
     x.bl.forEach(function(b){var c=cli(b.a.clienteId),i=Math.max(b.i,J_INI),e=Math.min(b.f,J_FIN);if(e<=J_INI||i>=J_FIN)return;
       var falta=!b.todo&&(f<h||(f==h&&b.f<=ahora));
-      s+='<button class="sem-b est '+est(c.estado)+(falta?" falta":"")+'" data-blq="'+esc(b.a.id)+'" style="top:'+((i-J_INI)/30*RH+1)+'px;height:'+((e-i)/30*RH-2)+'px;left:calc('+(b.k*100/b.n)+'% + 1px);width:calc('+(100/b.n)+'% - 2px)"><span class="sem-n">'+esc(c.nombre.split(" ")[0])+'</span>'+(e-i>=60?'<small>'+esc(b.a.que)+'</small>':"")+'</button>'});
+      s+='<button class="sem-b est '+est(c.estado)+(falta?" falta":"")+'" data-blq="'+esc(b.a.id)+'" style="top:'+((i-J_INI)/30*RH+1)+'px;height:'+((e-i)/30*RH-2)+'px;left:calc('+(b.k*100/b.n)+'% + 1px);width:calc('+(100/b.n)+'% - 2px)"><span class="sem-n">'+esc(n3?c.nombre:c.nombre.split(" ")[0])+'</span>'+(e-i>=60||n3?'<small>'+(n3?hLinda(b.i)+" · ":"")+esc(b.a.que)+'</small>':"")+'</button>'});
+    sug.forEach(function(g,k){if(g.f!=f)return;var c=cli(g.cid);
+      s+='<button class="sem-b sug est '+est(c.estado)+'" data-sug="'+k+'" style="top:'+((g.i-J_INI)/30*RH+1)+'px;height:'+((g.fin-g.i)/30*RH-2)+'px;left:1px;width:calc(100% - 2px)"><span class="sem-n">¿'+esc(n3?c.nombre:c.nombre.split(" ")[0])+'?</span>'+(g.fin-g.i>=60||n3?'<small>'+NOMBRE_E[g.paso]+'</small>':"")+'</button>'});
     s+='</div>'});
   s+='</div>';
   var sh=[];dias.forEach(function(f){bloquesDia(f).sh.forEach(function(a){sh.push(a)})});
   if(sh.length)s+='<div class="sem-sh"><span class="gris">Sin hora:</span> '+sh.map(function(a){var c=cli(a.clienteId);return'<button class="sem-b est '+est(c.estado)+'" data-blq="'+esc(a.id)+'">'+esc(mayus(DIAS[new Date(a.fecha+"T12:00:00").getDay()]).slice(0,3))+' · '+esc(c.nombre.split(" ")[0])+'</button>'}).join("")+'</div>';
-  s+='<div class="gris" style="font-size:13px;margin-top:8px">Cada cuadradito es media hora, de 7 a 20 h. Tocá un bloque para ver de quién es, o un hueco libre para meter a alguien.</div></div>';
+  s+='<div class="gris" style="font-size:13px;margin-top:8px">Cada cuadradito es media hora, de 7 a 20 h. Tocá un bloque para ver de quién es y confirmarlo, una sugerencia (punteada) para aceptarla, o un hueco libre para meter a alguien.</div></div>';
   s+='<h2>Avisos en este celular</h2><div class="card" id="zonaAvisos"><div class="gris">Revisando…</div></div><div class="fila"><a class="b" target="_blank" rel="noopener" href="https://calendar.google.com/calendar/r">Abrir Google Calendar</a><button class="b" data-quien>Entrar como otra persona ('+esc(TR.quien()||"?")+')</button></div></div>';setTimeout(pintarAvisos,0);return s}
 
 function hojaBloque(aid){var a=S.agenda[aid];if(!a)return;var c=cli(a.clienteId),e=est(c.estado),h=iso(),fin=a.hora?aMin(a.hora)+(Number(a.duracion)||60):0,falta=a.hora&&(a.fecha<h||(a.fecha==h&&fin<=ahoraMin()));
   abrirHoja(cabHoja(c.nombre,NOMBRE_E[e])+'<div class="quedo est '+e+'"><span class="t">'+esc(cuando(a.fecha,a.hora))+(rango(a)?" · "+esc(rango(a)):"")+'</span><span class="q">'+esc(a.que)+'</span>'+(c.direccion?'<span>'+esc(c.direccion+(c.zona?", "+c.zona:""))+'</span>':"")+'</div>'+
-   (falta?'<div><b>¿Se hizo?</b></div><div class="fila"><button class="b p" data-hb="hizo">Sí, se hizo</button><button class="b" data-hb="reprog">No, pasarlo a otro día</button></div>':"")+
+   '<div><b>'+(falta?"¿Se hizo?":"¿Cómo va?")+'</b></div><div class="fila"><button class="b p" data-hb="hizo">'+(falta?"Sí, se hizo":"✓ Ya está hecho")+'</button><button class="b" data-hb="reprog">'+(falta?"No, pasarlo a otro día":"Se cancela, pasarlo")+'</button></div>'+
    '<div class="f-bot ficha-bot">'+(c.telefono?'<a class="bt con" href="'+esc(waLink(c.telefono))+'" target="_blank" rel="noopener">Contactar</a>':"")+'<button class="bt cal" data-hb="mover">Cambiar</button><button class="bt res" data-hb="ver">Resumen</button></div>');
   $("hoja").querySelectorAll("[data-hb]").forEach(function(b){b.onclick=function(){var k=b.dataset.hb;cerrarHoja();
     if(k=="ver"){S.tab="clientes";S.abierto=a.clienteId;pintar();scrollTo(0,0)}
     else if(k=="mover")hojaSigue(a.clienteId,{paso:est(c.estado),fecha:a.fecha,hora:a.hora||"",que:a.que});
     else responder(k,a.clienteId,aid)}})}
+function hojaSug(k){var g=(S._sugs||[])[k];if(!g)return;var c=cli(g.cid),e=est(c.estado),si=situacion(c),d=new Date(g.f+"T12:00:00");
+  abrirHoja(cabHoja("¿"+c.nombre+"?","Sugerencia del asistente")+'<div class="quedo est '+e+'"><span class="t">'+esc(mayus(DIAS[d.getDay()])+" "+d.getDate()+" · "+hLinda(g.i)+" a "+hLinda(g.fin)+" h")+'</span><span class="q">'+esc(QUE_E[g.paso]||QUE_E[e])+'</span>'+(c.direccion?'<span>'+esc(c.direccion+(c.zona?", "+c.zona:""))+'</span>':"")+'</div>'+
+   '<div class="situ"><div class="situ-t">Por qué</div><div>• '+(e=="llamar"?'Hablaron hace poco y todavía no tiene visita.':'Está en <b>'+NOMBRE_E[e]+'</b> y no tiene día.')+'</div>'+si.lineas.slice(0,2).map(function(x){return'<div>• '+esc(x)+'</div>'}).join("")+'</div>'+
+   '<div class="fila"><button class="b p" data-sg="si">Sí, agendarlo ahí</button><button class="b" data-sg="otro">Otro horario</button><button class="b" data-sg="no">No por ahora</button></div>'+
+   '<div class="f-bot ficha-bot">'+(c.telefono?'<a class="bt con" href="'+esc(waLink(c.telefono))+'" target="_blank" rel="noopener">Contactar</a>':"")+'<button class="bt res" data-sg="ver">Resumen</button></div>');
+  $("hoja").querySelectorAll("[data-sg]").forEach(function(b){b.onclick=function(){var x=b.dataset.sg;cerrarHoja();
+    if(x=="si")hojaSigue(g.cid,{paso:g.paso,fecha:g.f,hora:aHora(g.i)});else if(x=="otro")hojaSigue(g.cid);else if(x=="ver"){S.tab="clientes";S.abierto=g.cid;pintar();scrollTo(0,0)}
+    else{var n=sugNo();n[g.cid]=sumaDias(iso(),3);try{localStorage.setItem("tr_sugno",JSON.stringify(n))}catch(e){}aviso("Listo, no te lo sugiero por 3 días");pintar()}}})}
 function hojaHueco(f,m){var lib=0,oc=bloquesDia(f).bl;var t=m;while(t<J_FIN&&!oc.some(function(b){return b.i<=t&&b.f>t}))t+=30;lib=t-m;
   if(!lib)return;var cs=candidatos(lib,{});var d=new Date(f+"T12:00:00");
   abrirHoja(cabHoja("Libre "+mayus(DIAS[d.getDay()])+" "+d.getDate(),"Desde las "+hLinda(m)+" h · "+(lib>=600?"todo el día libre":textoDur({duracion:lib})+" libres"))+
@@ -697,7 +725,11 @@ function ligar(){
   document.querySelectorAll("[data-archivar]").forEach(function(b){b.onclick=function(){if(b.dataset.archivar=="si")archivarWA(S.abierto);else archivar(S.abierto,false)}});
   document.querySelectorAll("[data-asis]").forEach(function(b){b.addEventListener("click",function(ev){ev.stopPropagation();responder(b.dataset.asis,b.dataset.cid,b.dataset.aid)})});
   document.querySelectorAll("[data-tel]").forEach(function(b){b.onclick=function(ev){ev.stopPropagation();hojaDatos(b.dataset.tel)}});
-  document.querySelectorAll("[data-sem]").forEach(function(b){b.onclick=function(){S.semana=sumaDias(S.semana,Number(b.dataset.sem));pintar()}});
+  document.querySelectorAll("[data-sem]").forEach(function(b){b.onclick=function(){var k=Number(b.dataset.sem),h=iso();
+    if((S.vista||3)==3){var d=S.desde||h;if(k>0)d=sumaDias(habil(d,4)[3],0);else{var n=0;while(n<3){d=sumaDias(d,-1);if(new Date(d+"T12:00:00").getDay()!=0)n++}}S.desde=d}
+    else S.semana=sumaDias(S.semana||lunesDe(h),7*k);pintar()}});
+  document.querySelectorAll("[data-vista]").forEach(function(b){b.onclick=function(){S.vista=Number(b.dataset.vista);pintar()}});
+  document.querySelectorAll("[data-sug]").forEach(function(b){b.addEventListener("click",function(ev){ev.stopPropagation();hojaSug(Number(b.dataset.sug))})});
   document.querySelectorAll("[data-blq]").forEach(function(b){b.addEventListener("click",function(ev){ev.stopPropagation();hojaBloque(b.dataset.blq)})});
   document.querySelectorAll("[data-celda]").forEach(function(d){d.onclick=function(ev){var r=d.getBoundingClientRect(),m=J_INI+Math.floor((ev.clientY-r.top)/RH)*30;var f=d.dataset.celda,h=iso();if(f<h||(f==h&&m+30<=ahoraMin()))return aviso("Ese horario ya pasó");hojaHueco(f,m)}});
   document.querySelectorAll("[data-arc]").forEach(function(b){b.addEventListener("click",function(ev){ev.stopPropagation();var c=cli(b.dataset.arc);if(archivado(c)){archivar(b.dataset.arc,false);aviso("Volvió a la lista")}else archivarWA(b.dataset.arc)})});
